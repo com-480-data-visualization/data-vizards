@@ -30,7 +30,7 @@ function interactive_globe(polygonSeries){
 	am5.ready(function() {
 
 	// Create root element
-	var root = am5.Root.new("chartdiv");
+	var root = am5.Root.new("");
 
 	// Set themes
 	root.setThemes([
@@ -197,6 +197,7 @@ whenDocumentLoaded(() => {
     .attr("id", "main-title")
     .text("World Value Survey");
 	// create image divider
+	/*
 	const newDiv = document.createElement("div");
 	newDiv.id = "image-container";
 	newDiv.classList.add("middle-left");
@@ -205,6 +206,12 @@ whenDocumentLoaded(() => {
 	const domElement = d3.select("#image-container");
 	const imagePath = '/Figures/raw_map_asset.png';
 	domElement.append('img').attr('src', imagePath);
+	*/
+	// interactive globe
+	const char_div = document.createElement("div");
+	char_div.id = "chartdiv";
+	char_div.classList.add("middle-left");
+	document.body.appendChild(char_div);
 	// Interactive bar
 	const module_div = document.createElement("div");
 	module_div.id = "module-container";
