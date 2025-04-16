@@ -76,6 +76,11 @@ body {
 	transform: translateY(-40%);
   }
   
+#chartdiv {
+	width: 33%;
+	height: 500px;
+	max-width: 100%;
+  }
 
 /*
 It is easier to read if the text is not too wide, so we limit the width.

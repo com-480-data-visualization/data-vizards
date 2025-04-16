@@ -9,28 +9,28 @@ function whenDocumentLoaded(action) {
 }
 
 const barCountryMapping = {
-	1: "USA",  // Bar 1 highlights United States
-	2: "CAN",  // Bar 2 highlights Canada
-	3: "GBR",  // Bar 3 highlights United Kingdom
-	4: "FRA",  // Bar 4 highlights France
-	5: "DEU",  // Bar 5 highlights Germany
-	6: "BRA",  // Bar 6 highlights Brazil
-	7: "RUS",  // Bar 7 highlights Russia
-	8: "IND",  // Bar 8 highlights India
-	9: "CHN",  // Bar 9 highlights China
-	10: "AUS"  // Bar 10 highlights Australia
+	1: "US",  // Bar 1 highlights United States
+	2: "CA",  // Bar 2 highlights Canada
+	3: "ES",  // Bar 3 highlights Spain
+	4: "FR",  // Bar 4 highlights France
+	5: "DE",  // Bar 5 highlights Germany
+	6: "BR",  // Bar 6 highlights Brazil
+	7: "RU",  // Bar 7 highlights Russia
+	8: "IN",  // Bar 8 highlights India
+	9: "CH",  // Bar 9 highlights Switzerland
+	0: "AU"  // Bar 10 highlights Australia
   };
 
 //const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
 
-function interactive_globe(polygonSeries){
+function interactive_globe(){
 	// --------------------
 	// Interactive Earth Globe Code (amCharts 5)
 	// --------------------
 	am5.ready(function() {
 
 	// Create root element
-	var root = am5.Root.new("");
+	var root = am5.Root.new("chartdiv");
 
 	// Set themes
 	root.setThemes([
@@ -61,10 +61,10 @@ function interactive_globe(polygonSeries){
 		interactive: true
 	});
 
-	// Commenting out the hover state so that hover does not trigger highlighting:
-	// polygonSeries.mapPolygons.template.states.create("hover", {
-	//   fill: root.interfaceColors.get("primaryButtonHover")
-	// });
+	polygonSeries.mapPolygons.template.states.create("active", {
+		// Use a fill color of your choice
+		fill: root.interfaceColors.get("primaryButtonHover")
+	  });
 
 	// Create series for background fill
 	var backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
@@ -92,7 +92,6 @@ function interactive_globe(polygonSeries){
 		duration: 30000,
 		loops: Infinity
 	});
-
 	// Animate chart appearance on load
 	chart.appear(1000, 100);
 	});
@@ -100,8 +99,7 @@ function interactive_globe(polygonSeries){
 
 function interactive_bar(){
 	// Global variables for use in both amCharts and D3 code
-	let polygonSeries;  // Will be set in the am5.ready block
-	interactive_globe(polygonSeries)
+	interactive_globe()
 
 	const data = d3.range(10, 0, -1);
 
@@ -152,25 +150,28 @@ function interactive_bar(){
 		//  alert("You clicked the bar for " + (10-d));
 		//});
 		.on("click", (event, d) => {
-			// Clear previous active state from all countries
-			polygonSeries.mapPolygons.each(function(polygon) {
-			  polygon.set("active", false);
-			});
-			
-			// Lookup the country associated with this bar value.
-			// For simplicity, assume d (bar value) maps directly.
+			// Clear previous active state from all countries.
+			if (polygonSeries) {
+			  polygonSeries.mapPolygons.each(function(polygon) {
+				polygon.set("active", false);
+			  });
+			}
+		  
+			// Look up the country associated with this bar's value.
 			const countryID = barCountryMapping[d];
-			
-			if (countryID) {
-			  // Get the polygon by its id; this method depends on how amCharts IDs are set in your geoJSON.
-			  let polygon = polygonSeries.getPolygonById(countryID);
-			  if (polygon) {
-				// Toggle the active state: this highlights the country.
-				polygon.set("active", true);
-				// Optionally, you can force the tooltip to show:
-				// polygon.showTooltip();
+			if (countryID && polygonSeries) {
+			  // Use getDataItemById to retrieve the data item for the country.
+			  let dataItem = polygonSeries.getDataItemById(countryID);
+			  if (dataItem) {
+				// Then get the mapPolygon from the data item.
+				let polygon = dataItem.get("mapPolygon");
+				if (polygon) {
+				  polygon.set("active", true);
+				} else {
+				  console.warn("No polygon found for country: " + countryID);
+				}
 			  } else {
-				console.warn("Country polygon not found for id: " + countryID);
+				console.warn("No data item found for id: " + countryID);
 			  }
 			} else {
 			  console.warn("No country mapping defined for bar value: " + d);
