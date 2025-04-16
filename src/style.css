@@ -71,7 +71,7 @@ body {
 	position: absolute;
 	/* Adjust left to be to the right of the image container; 
 	   if your image is, say, 200px wide plus some margin, set left accordingly */
-	left: 370px;  
+	left: 500px;  
 	top: 50%;
 	transform: translateY(-40%);
   }
