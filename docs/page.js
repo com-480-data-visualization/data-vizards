@@ -90,7 +90,7 @@ whenDocumentLoaded(() => {
 	document.body.appendChild(newDiv);
 	// select container
 	const domElement = d3.select("#image-container");
-	const imagePath = '/Users/jeremy/EPFL/phd/DataViz/Project/img/raw_map_asset.png';
+	const imagePath = '/Figures/raw_map_asset.png';
 	domElement.append('img').attr('src', imagePath);
 	// Interactive bar
 	const module_div = document.createElement("div");
