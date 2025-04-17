@@ -36,7 +36,7 @@ The related work is shown in the corresponding section of the [pdf](./milestones
 **10% of the final grade**
 
 
-• [Website](./index.html) 
+• [Website](https://com-480-data-visualization.github.io/data-vizards/) 
 
 • [Link to milestone 2](./milestones/Milestone_2.pdf)
 
