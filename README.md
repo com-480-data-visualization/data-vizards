@@ -34,13 +34,21 @@ The related work is shown in the corresponding section of the [pdf](https://gith
 ## Milestone 2 (18th April, 5pm)
 
 **10% of the final grade**
-[Website](#website) • [Link to milestone 2](#milestone-2)
+
+
+• [Website](#website) 
+
+• [Link to milestone 2](#milestone-2)
 
 
 ## Milestone 3 (30th May, 5pm)
 
 **80% of the final grade**
-[Website](#website) • [Link to milestone 3](#milestone-3) • [Video](#video)
+
+
+• [Website](#website) 
+• [Link to milestone 3](#milestone-3) 
+• [Screencast](#video)
 
 ## Late policy
 
