@@ -40,7 +40,7 @@ The related work is shown in the corresponding section of the [pdf](./milestones
 
 • [Link to milestone 2](./milestones/Milestone_2.pdf)
 
-• Bonus:[Link to country matching demo](./matching_demo.ipynb)
+• Bonus: [Link to country matching demo](./matching_demo.ipynb)
 
 
 ## Milestone 3 (30th May, 5pm)
