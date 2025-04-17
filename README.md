@@ -6,41 +6,30 @@
 | Camille Pittet| 326866|
 | Renuka Singh Virk| 326470|
 
-[Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](./milestone 1/Milestone_1.pdf) • [Milestone 2](./milestone 2/Milestone_2.pdf) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (21st March, 5pm)
 
 **10% of the final grade**
-
-This is a preliminary milestone to let you set up goals for your final project and assess the feasibility of your ideas.
-Please, fill the following sections about your project.
-
-*(max. 2000 characters per section)*
-
 ### Dataset
-
-> Find a dataset (or multiple) that you will explore. Assess the quality of the data it contains and how much preprocessing / data-cleaning it will require before tackling visualization. We recommend using a standard dataset as this course is not about scraping nor data processing.
->
-> Hint: some good pointers for finding quality publicly available datasets ([Google dataset search](https://datasetsearch.research.google.com/), [Kaggle](https://www.kaggle.com/datasets), [OpenSwissData](https://opendata.swiss/en/), [SNAP](https://snap.stanford.edu/data/) and [FiveThirtyEight](https://data.fivethirtyeight.com/)), you could use also the DataSets proposed by the ENAC (see the Announcements section on Zulip).
+We use the [World Values Survey dataset](https://www.worldvaluessurvey.org/WVSDocumentationWV7.jsp), more specifically the data collected between the years 2017 and 2022 in nearly 70 countries.
+The dataset consists of 294 questions, of which we keep about 40.
 
 ### Problematic
 
-> Frame the general topic of your visualization and the main axis that you want to develop.
-> - What am I trying to show with my visualization?
-> - Think of an overview for the project, your motivation, and the target audience.
+The aim of this project is to perform a world-wide analysis of the opinion of people on a large set of key topics, from ethical values to attitudes towards science and technology. 
+To provide an engaging and personalized experience, users answer a series of questions to generate their "avatar", a simple representation of their values. 
+We then identify the countries that are the most aligned with their profile. 
+Furthemore, additional analysis will create a mapping of the different values through the countries. 
+This interactive feature will let users explore and understand the global landscape of cultural perceptions, ultimately helping them uncover the country of their dreams.
 
 ### Exploratory Data Analysis
 
-> Pre-processing of the data set you chose
-> - Show some basic statistics and get insights about the data
+The results of the exploratory data analysis are shown [here](./milestone 1/EDA_WVS.ipynb).
 
 ### Related work
 
-
-> - What others have already done with the data?
-> - Why is your approach original?
-> - What source of inspiration do you take? Visualizations that you found on other websites or magazines (might be unrelated to your data).
-> - In case you are using a dataset that you have already explored in another context (ML or ADA course, semester project...), you are required to share the report of that work to outline the differences with the submission for this class.
+The related work is shown in the corresponding section of the [pdf](./milestone 1/Milestone_1.pdf).
 
 ## Milestone 2 (18th April, 5pm)
 
