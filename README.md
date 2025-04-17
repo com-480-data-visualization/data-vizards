@@ -6,7 +6,7 @@
 | Camille Pittet| 326866|
 | Renuka Singh Virk| 326470|
 
-[Milestone 1]([milestone 1/Milestone_1.pdf](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (21st March, 5pm)
 
@@ -25,11 +25,11 @@ This interactive feature will let users explore and understand the global landsc
 
 ### Exploratory Data Analysis
 
-The results of the exploratory data analysis are shown [here]([./milestone 1/EDA_WVS.ipynb](https://github.com/com-480-data-visualization/data-vizards/blob/master/milestone%201/EDA_WVS.ipynb).
+The results of the exploratory data analysis are shown [here](https://github.com/com-480-data-visualization/data-vizards/blob/master/milestone%201/EDA_WVS.ipynb).
 
 ### Related work
 
-The related work is shown in the corresponding section of the [pdf]([./milestone 1/Milestone_1.pdf](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201).
+The related work is shown in the corresponding section of the [pdf](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201).
 
 ## Milestone 2 (18th April, 5pm)
 
