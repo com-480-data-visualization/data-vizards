@@ -29,7 +29,7 @@ The results of the exploratory data analysis are shown [here](https://github.com
 
 ### Related work
 
-The related work is shown in the corresponding section of the [pdf](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201).
+The related work is shown in the corresponding section of the [pdf](https://github.com/com-480-data-visualization/data-vizards/blob/master/milestone%201/Milestone_1.pdf).
 
 ## Milestone 2 (18th April, 5pm)
 
