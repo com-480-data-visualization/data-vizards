@@ -25,7 +25,7 @@ This interactive feature will let users explore and understand the global landsc
 
 ### Exploratory Data Analysis
 
-The results of the exploratory data analysis are shown [here](https://github.com/com-480-data-visualization/data-vizards/blob/master/milestone%201/EDA_WVS.ipynb).
+The results of the exploratory data analysis are shown [here](./milestones/EDA_WVS.ipynb).
 
 ### Related work
 
