@@ -6,7 +6,7 @@
 | Camille Pittet| 326866|
 | Renuka Singh Virk| 326470|
 
-[Milestone 1](./milestone 1/Milestone_1.pdf) • [Milestone 2](./milestone 2/Milestone_2.pdf) • [Milestone 3](#milestone-3)
+[Milestone 1](milestone 1/Milestone_1.pdf) • [Milestone 2](./milestone 2/Milestone_2.pdf) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (21st March, 5pm)
 
