@@ -6,7 +6,7 @@
 | Camille Pittet| 326866|
 | Renuka Singh Virk| 326470|
 
-[Milestone 1](https://github.com/com-480-data-visualization/data-vizards/tree/master/milestone%201) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](./milestones/Milestone_1.pdf) • [Milestone 2](./milestones/Milestone_2.pdf) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (21st March, 5pm)
 
@@ -29,16 +29,16 @@ The results of the exploratory data analysis are shown [here](./milestones/EDA_W
 
 ### Related work
 
-The related work is shown in the corresponding section of the [pdf](https://github.com/com-480-data-visualization/data-vizards/blob/master/milestone%201/Milestone_1.pdf).
+The related work is shown in the corresponding section of the [pdf](./milestones/Milestone_1.pdf).
 
 ## Milestone 2 (18th April, 5pm)
 
 **10% of the final grade**
 
 
-• [Website](#website) 
+• [Website](./index.html) 
 
-• [Link to milestone 2](#milestone-2)
+• [Link to milestone 2](./milestones/Milestone_2.pdf)
 
 
 ## Milestone 3 (30th May, 5pm)
