@@ -47,7 +47,9 @@ The related work is shown in the corresponding section of the [pdf](https://gith
 
 
 • [Website](#website) 
+
 • [Link to milestone 3](#milestone-3) 
+
 • [Screencast](#video)
 
 ## Late policy
