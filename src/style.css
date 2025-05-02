@@ -33,7 +33,7 @@ body {
 	height: 100vh;
 
 	/* center vertically */
-	display: flex;
+	/*display: flex;*/
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-content: center;
@@ -46,12 +46,7 @@ body {
 	font-size: 1.1rem;
 }
 
-.middle-left {
-	position: absolute;   /* Position relative to the window */
-	left: 10px;              /* Align to the left edge */
-	top: 50%;             /* Position vertically at 50% of the viewport height */
-	transform: translateY(-50%);  /* Adjust position so that the element is fully centered vertically */
-  }
+
 
 #main-title {
 	position: absolute;
@@ -66,29 +61,21 @@ body {
 	font-size: 1.5rem;
   }
 
-/* Interactive module container: position it relative to the viewport */
-#module-container {
-	position: absolute;
-	/* Adjust left to be to the right of the image container; 
-	   if your image is, say, 200px wide plus some margin, set left accordingly */
-	left: 500px;  
-	top: 50%;
-	transform: translateY(-40%);
-  }
   
-#chartdiv {
-	width: 33%;
-	height: 500px;
-	max-width: 100%;
+
+#dashboard {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1rem;
+	padding: 1rem;
   }
-
-/*
-It is easier to read if the text is not too wide, so we limit the width.
-We use the class selector ".", so this style will be applied to elements with class="width-limited"
-
-The various units of measurement available in CSS:
-	https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Values_and_units
-*/
+  .module, /* if you give each child a “module” class… */
+  #chartdiv,
+  #module-container {
+	background: #20232a;
+	padding: 1rem;
+	border-radius: 8px;
+  }
 
 svg {
 	margin: 1rem;

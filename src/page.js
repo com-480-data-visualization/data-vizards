@@ -9,6 +9,7 @@ function whenDocumentLoaded(action) {
 }
 
 const barCountryMapping = {
+	0: "AU",  // Bar 10 highlights Australia
 	1: "US",  // Bar 1 highlights United States
 	2: "CA",  // Bar 2 highlights Canada
 	3: "ES",  // Bar 3 highlights Spain
@@ -18,92 +19,89 @@ const barCountryMapping = {
 	7: "RU",  // Bar 7 highlights Russia
 	8: "IN",  // Bar 8 highlights India
 	9: "CH",  // Bar 9 highlights Switzerland
-	0: "AU"  // Bar 10 highlights Australia
   };
 
-//const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
 
-function interactive_globe(){
-	// --------------------
-	// Interactive Earth Globe Code (amCharts 5)
-	// --------------------
-	am5.ready(function() {
+function create_interactive_globe(container_id){
+	return new Promise(resolve => {
+		// --------------------
+		// Interactive Earth Globe Code (amCharts 5)
+		// --------------------
+		am5.ready(function() {
 
-	// Create root element
-	var root = am5.Root.new("chartdiv");
+		// Create root element
+		const root = am5.Root.new(container_id);
 
-	// Set themes
-	root.setThemes([
-		am5themes_Animated.new(root)
-	]);
+		// Set themes
+		root.setThemes([
+			am5themes_Animated.new(root)
+		]);
 
-	// Create the map chart with orthographic projection
-	var chart = root.container.children.push(am5map.MapChart.new(root, {
-		panX: "rotateX",
-		panY: "rotateY",
-		projection: am5map.geoOrthographic(),
-		paddingBottom: 20,
-		paddingTop: 20,
-		paddingLeft: 20,
-		paddingRight: 20
-	}));
+		// Create the map chart with orthographic projection
+		const chart = root.container.children.push(am5map.MapChart.new(root, {
+			panX: "rotateX",
+			panY: "rotateY",
+			projection: am5map.geoOrthographic(),
+			paddingBottom: 20,
+			paddingTop: 20,
+			paddingLeft: 20,
+			paddingRight: 20
+		}));
 
-	// Create main polygon series for countries
-	// (We no longer set a hover state or tooltip on hover.)
-	polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-		geoJSON: am5geodata_worldLow
-	}));
+		// Create main polygon series for countries
+		// (We no longer set a hover state or tooltip on hover.)
+		const polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+			geoJSON: am5geodata_worldLow
+		}));
 
-	// Remove tooltip on hover and disable hover fill (or comment them out)
-	polygonSeries.mapPolygons.template.setAll({
-		// tooltipText: "{name}", // Optional: if you want tooltips on activation, you can leave it.
-		toggleKey: "active",
-		interactive: true
-	});
+		// Remove tooltip on hover and disable hover fill (or comment them out)
+		polygonSeries.mapPolygons.template.setAll({
+			// tooltipText: "{name}", // Optional: if you want tooltips on activation, you can leave it.
+			toggleKey: "active",
+			interactive: true
+		});
 
-	polygonSeries.mapPolygons.template.states.create("active", {
-		// Use a fill color of your choice
-		fill: root.interfaceColors.get("primaryButtonHover")
-	  });
+		polygonSeries.mapPolygons.template.states.create("active", {
+			// Use a fill color of your choice
+			fill: root.interfaceColors.get("primaryButtonHover")
+		});
 
-	// Create series for background fill
-	var backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
-	backgroundSeries.mapPolygons.template.setAll({
-		fill: root.interfaceColors.get("alternativeBackground"),
-		fillOpacity: 0.1,
-		strokeOpacity: 0
-	});
-	backgroundSeries.data.push({
-		geometry: am5map.getGeoRectangle(90, 180, -90, -180)
-	});
+		// Create series for background fill
+		const backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
+		backgroundSeries.mapPolygons.template.setAll({
+			fill: root.interfaceColors.get("alternativeBackground"),
+			fillOpacity: 0.1,
+			strokeOpacity: 0
+		});
+		backgroundSeries.data.push({
+			geometry: am5map.getGeoRectangle(90, 180, -90, -180)
+		});
 
-	// Create graticule series
-	var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
-	graticuleSeries.mapLines.template.setAll({ 
-		strokeOpacity: 0.1, 
-		stroke: root.interfaceColors.get("alternativeBackground")
-	});
+		// Create graticule series
+		const graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+		graticuleSeries.mapLines.template.setAll({ 
+			strokeOpacity: 0.1, 
+			stroke: root.interfaceColors.get("alternativeBackground")
+		});
 
-	// Rotate animation for the globe
-	chart.animate({
-		key: "rotationX",
-		from: 0,
-		to: 360,
-		duration: 30000,
-		loops: Infinity
-	});
-	// Animate chart appearance on load
-	chart.appear(1000, 100);
-	});
+		// Rotate animation for the globe
+		chart.animate({
+			key: "rotationX",
+			from: 0,
+			to: 360,
+			duration: 30000,
+			loops: Infinity
+		});
+		// Animate chart appearance on load
+		chart.appear(1000, 100);
+		resolve({ root, chart, polygonSeries });
+		});
+  });
 }
 
-function interactive_bar(){
-	// Global variables for use in both amCharts and D3 code
-	interactive_globe()
-
-	const data = d3.range(10, 0, -1);
-
+function create_interactive_bar(globe){
 	// Set up dimensions
+	const data = d3.range(10, 0, -1);
 	const width = 300, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 20;
 	const barGap = 30;
 	
@@ -145,23 +143,18 @@ function interactive_bar(){
 		.on("mouseout", function() {
 		  d3.select(this).attr("fill", "gray");
 		})
-		// Click action
-		//.on("click", (event, d) => {
-		//  alert("You clicked the bar for " + (10-d));
-		//});
 		.on("click", (event, d) => {
 			// Clear previous active state from all countries.
-			if (polygonSeries) {
-			  polygonSeries.mapPolygons.each(function(polygon) {
+			if (globe.polygonSeries) {
+				globe.polygonSeries.mapPolygons.each(function(polygon) {
 				polygon.set("active", false);
 			  });
 			}
-		  
 			// Look up the country associated with this bar's value.
 			const countryID = barCountryMapping[d];
-			if (countryID && polygonSeries) {
+			if (countryID && globe.polygonSeries) {
 			  // Use getDataItemById to retrieve the data item for the country.
-			  let dataItem = polygonSeries.getDataItemById(countryID);
+			  let dataItem = globe.polygonSeries.getDataItemById(countryID);
 			  if (dataItem) {
 				// Then get the mapPolygon from the data item.
 				let polygon = dataItem.get("mapPolygon");
@@ -190,34 +183,34 @@ function interactive_bar(){
 		.text(d => d);
 }
 
-whenDocumentLoaded(() => {
-
+whenDocumentLoaded(async () => {
 	// create title
 	d3.select("body")
     .append("div")
     .attr("id", "main-title")
     .text("World Value Survey");
-	// create image divider
-	/*
-	const newDiv = document.createElement("div");
-	newDiv.id = "image-container";
-	newDiv.classList.add("middle-left");
-	document.body.appendChild(newDiv);
-	// select container
-	const domElement = d3.select("#image-container");
-	const imagePath = '/Figures/raw_map_asset.png';
-	domElement.append('img').attr('src', imagePath);
-	*/
+	// Create main dashboard
+	const dashboard = document.createElement("div");
+	dashboard.id = "dashboard";
+	document.body.appendChild(dashboard);
 	// interactive globe
 	const char_div = document.createElement("div");
 	char_div.id = "chartdiv";
-	char_div.classList.add("middle-left");
-	document.body.appendChild(char_div);
+	dashboard.appendChild(char_div);
+	//char_div.classList.add("middle-left");
+	//document.body.appendChild(char_div);
+	const globe = await create_interactive_globe("chartdiv");
 	// Interactive bar
-	const module_div = document.createElement("div");
-	module_div.id = "module-container";
-	document.body.appendChild(module_div);
-	interactive_bar()
+	//const module_div = document.createElement("div");
+	//module_div.id = "module-container";
+	//document.body.appendChild(module_div);
+	const bar = document.createElement("div");
+	bar.id = "module-container";
+	dashboard.appendChild(bar);
+	create_interactive_bar(globe);
+	// verify that everything ran smoothly
+	char_div.classList.add("module");
+	bar.classList.add("module");
 	console.log('working');
 
 });
