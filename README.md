@@ -48,7 +48,7 @@ The related work is shown in the corresponding section of the [pdf](./milestones
 **80% of the final grade**
 
 
-• [Website](#website) 
+• [Website](https://com-480-data-visualization.github.io/data-vizards/) 
 
 • [Link to milestone 3](#milestone-3) 
 
