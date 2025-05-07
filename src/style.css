@@ -30,14 +30,27 @@ body {
 }
 
 
+#page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;        
+  }
 
-#main-title {
-	position: static;        /* instead of absolute */
-	margin: 1rem 1rem 0.5rem;/* top/right 1rem, bottom 0.5rem */
-	padding: 0;              /* you can remove its extra padding */
+#page-header > div {
+	margin: 0;
+  }
+
+#explore-title {
 	font-size: 1.5rem;
+	font-weight: bold;
 	color: #fff;
-	z-index: auto;
+  }
+  
+#main-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #fff;
   }
 
 #dashboard {

@@ -109,7 +109,7 @@ function create_interactive_globe(container_id){
 function create_interactive_bar(globe,name="Ethical Value X",subtitle="Question"){
 	// Set up dimensions
 	const data = d3.range(10, 0, -1);
-	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 20;
+	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 80;
 	const barGap = 30;
 	
 	//setup title
@@ -257,15 +257,24 @@ function create_section_selector(container_id,globe){
 }
 
 whenDocumentLoaded(async () => {
+	// create header
+	const header = d3.select("body")
+    .insert("div", ":first-child")
+    .attr("id", "page-header");
 	// create title
-	d3.select("body")
-    .append("div")
+	header.append("div")
     .attr("id", "main-title")
     .text("World Value Survey")
 	.style("cursor", "pointer")
 	.on("click", (event, d) => {
 		location.reload(true);
 	});
+	//
+	header.append("div")
+    .attr("id", "explore-title")
+    .style("cursor", "pointer")
+    .text("Explore")
+    .on("click", () => console.log('Explore'));
 	// Create main dashboard
 	const dashboard = document.createElement("div");
 	dashboard.id = "dashboard";
