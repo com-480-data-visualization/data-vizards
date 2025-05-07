@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WVS Explore - Demographics</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="explore.css" />
+
+  <!-- load D3 for CSV loading -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <!-- load the UMD build of Chart.js so "Chart" is global -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>World Values Survey: Explorer</h1>
+    <p>Scroll down to explore the demographic breakdown of respondents.</p>
+  </header>
+
+  <section id="demographics">
+    <h2>Demographics</h2>
+    <div id="demo-controls">
+      <label><input type="radio" name="demCategory" value="age" checked> Age</label> <!-- set Age as default-->
+      <label><input type="radio" name="demCategory" value="sex"> Sex</label>
+      <label><input type="radio" name="demCategory" value="religion"> Religion</label>
+      <label><input type="radio" name="demCategory" value="education"> Education</label>
+      <label><input type="radio" name="demCategory" value="econClass"> Economic class</label>
+      <label><input type="radio" name="demCategory" value="ethnicity"> Ethnicity</label>
+    </div>
+    <canvas id="demoDonut"></canvas>
+  </section>
+
+  <section id="country-similarities">
+    <h2>Similarities between countries</h2>
+    <svg id="countryBubbles" width="1500" height="700"></svg>
+  </section>
+
+  <!-- kick off your JS -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>
