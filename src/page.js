@@ -106,22 +106,24 @@ function create_interactive_globe(container_id){
   });
 }
 
-function create_interactive_bar(globe){
+function create_interactive_bar(globe,name="Ethical Value X",subtitle="Question"){
 	// Set up dimensions
 	const data = d3.range(10, 0, -1);
-	const width = 300, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 20;
+	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 20;
 	const barGap = 30;
 	
 	//setup title
-	d3.select("#interactivebar")
-	.insert("div", ":first-child")
-	.attr("id", "module-title")
-	.style("width", "100%")             // Ensure full width if needed
-	.style("text-align", "center")      // Center the text horizontally
-	.style("padding-top", "20px")       // Adjust vertical position
-	.style("color", "white")            // Set text color to white
-	.style("font-size", "24px")         // Increase the font size
-	.text("Ethical Value X");
+	const titleContainer = d3.select("#interactivebar")
+  		.insert("div", ":first-child")
+    	.attr("id", "module-title");
+
+	titleContainer.append("div")
+		.attr("class", "main-title")
+		.text(name);
+
+	titleContainer.append("div")
+		.attr("class", "module-subtitle")
+		.text(subtitle);
 
 	// Create an SVG
 	const svg = d3.select("#interactivebar")
@@ -132,7 +134,7 @@ function create_interactive_bar(globe){
 	// Scale for bar lengths (longer bars for higher numbers)
 	const xScale = d3.scaleLinear()
 	  .domain([0, d3.max(data)])
-	  .range([0, width - offsetLeft - 20]); // 20 is just a small margin
+	  .range([0, width - offsetLeft - 30]); // 20 is just a small margin
 	
 	// Append bars
 	svg.selectAll("rect")
@@ -183,14 +185,14 @@ function create_interactive_bar(globe){
 	  .data(data)
 	  .enter().append("text")
 		.attr("x", d => offsetLeft + xScale(d) + 10)
-		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) - 2)
+		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
 		.attr("alignment-baseline", "middle")
 		.attr("fill", "#ccc")
 		.style("font-size", "12px") 
 		.text(d => d);
 }
 
-function create_section_selector(container_id){
+function create_section_selector(container_id,globe){
 	const data = d3.range(0, Object.keys(sectionMapping).length, 1);
 	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 80;
 	const bar_width = 10, barGap = 60;
@@ -241,6 +243,15 @@ function create_section_selector(container_id){
 		})
 		.on("click", (event, d) => {
 			console.log('Selected: '+sectionMapping[d])
+			//
+			const oldDiv = document.getElementById(container_id);
+  			const parent = oldDiv.parentNode;
+			const newDiv = document.createElement("div");
+  			newDiv.id = "interactivebar";
+			newDiv.classList.add("module");
+			parent.replaceChild(newDiv, oldDiv);
+			d3.select(container_id).remove();
+			create_interactive_bar(globe,sectionMapping[d]);
 		});
 		
 }
@@ -275,7 +286,7 @@ whenDocumentLoaded(async () => {
 	const sections = document.createElement("div");
 	sections.id = "sectionSelector";
 	dashboard.appendChild(sections);
-	create_section_selector("sectionSelector");
+	create_section_selector("sectionSelector",globe);
 	// verify that everything ran smoothly
 	char_div.classList.add("module");
 	//bar.classList.add("module");

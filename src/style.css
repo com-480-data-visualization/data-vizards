@@ -59,6 +59,24 @@ body {
 	border-radius: 8px;
   }
 
+  #module-title {
+	width: 100%;
+	text-align: center;
+	padding-top: 20px;
+  }
+  
+  #module-title .main-title {
+	font-size: 24px;
+	font-weight: bold;
+	color: white;
+  }
+  
+  #module-title .module-subtitle {
+	font-size: 16px;
+	margin-top: 4px;
+	color: #ccc;
+  }
+
 svg {
 	margin: 1rem;
 }
