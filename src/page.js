@@ -21,6 +21,13 @@ const barCountryMapping = {
 	9: "CH",  // Bar 9 highlights Switzerland
   };
 
+const sectionMapping = {
+	0: "Global Survey",  // Bar 10 highlights Australia
+	1: "Social capital and trust survey",  // Bar 1 highlights United States
+	2: "Ethical values and norms survey",  // Bar 2 highlights Canada
+	3: "Social values and stereotypes survey",  // Bar 3 highlights Spain
+  };
+
 
 function create_interactive_globe(container_id){
 	return new Promise(resolve => {
@@ -106,7 +113,7 @@ function create_interactive_bar(globe){
 	const barGap = 30;
 	
 	//setup title
-	d3.select("#module-container")
+	d3.select("#interactivebar")
 	.insert("div", ":first-child")
 	.attr("id", "module-title")
 	.style("width", "100%")             // Ensure full width if needed
@@ -117,7 +124,7 @@ function create_interactive_bar(globe){
 	.text("Ethical Value X");
 
 	// Create an SVG
-	const svg = d3.select("#module-container")
+	const svg = d3.select("#interactivebar")
 	  .append("svg")
 	  .attr("width", width)
 	  .attr("height", height);
@@ -183,34 +190,96 @@ function create_interactive_bar(globe){
 		.text(d => d);
 }
 
+function create_section_selector(container_id){
+	const data = d3.range(0, Object.keys(sectionMapping).length, 1);
+	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 80;
+	const bar_width = 10, barGap = 60;
+
+	//setup title
+	d3.select("#"+container_id)
+	.insert("div", ":first-child")
+	.attr("id", "module-title")
+	.style("width", "100%")             // Ensure full width if needed
+	.style("text-align", "center")      // Center the text horizontally
+	.style("padding-top", "20px")       // Adjust vertical position
+	.style("color", "white")            // Set text color to white
+	.style("font-size", "24px")         // Increase the font size
+	.text("Section Selection");
+
+	// Create an SVG
+	const svg = d3.select("#"+container_id)
+	  .append("svg")
+	  .attr("width", width)
+	  .attr("height", height);
+
+	// Append bars
+	svg.selectAll("rect")
+	  .data(data)
+	  .enter().append("rect")
+		.attr("x", offsetLeft)
+		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap))
+		.attr("width", d => bar_width)
+		.attr("height", barHeight - 4) // slight gap
+		.attr("fill", "gray")
+
+	// Append the text at the tip of each bar
+	svg.selectAll("text")
+	  .data(data)
+	  .enter().append("text")
+		.attr("x", d => offsetLeft + bar_width + 10)
+		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) +  5)
+		.attr("text-anchor", "start")
+		.attr("fill", "gray")
+		.style("cursor", "pointer")
+		.style("font-size", "24px") 
+		.text(d => sectionMapping[d])
+		.on("mouseover", function() {
+			d3.select(this).attr("fill", "white");
+		  })
+		.on("mouseout", function() {
+			d3.select(this).attr("fill", "gray");
+		})
+		.on("click", (event, d) => {
+			console.log('Selected: '+sectionMapping[d])
+		});
+		
+}
+
 whenDocumentLoaded(async () => {
 	// create title
 	d3.select("body")
     .append("div")
     .attr("id", "main-title")
-    .text("World Value Survey");
+    .text("World Value Survey")
+	.style("cursor", "pointer")
+	.on("click", (event, d) => {
+		location.reload(true);
+	});
 	// Create main dashboard
 	const dashboard = document.createElement("div");
 	dashboard.id = "dashboard";
 	document.body.appendChild(dashboard);
-	// interactive globe
+	// Interactive globe
 	const char_div = document.createElement("div");
 	char_div.id = "chartdiv";
 	dashboard.appendChild(char_div);
-	//char_div.classList.add("middle-left");
-	//document.body.appendChild(char_div);
 	const globe = await create_interactive_globe("chartdiv");
 	// Interactive bar
-	//const module_div = document.createElement("div");
-	//module_div.id = "module-container";
-	//document.body.appendChild(module_div);
+	/*
 	const bar = document.createElement("div");
-	bar.id = "module-container";
+	bar.id = "interactivebar";
 	dashboard.appendChild(bar);
 	create_interactive_bar(globe);
+	*/
+	// Interactive bar
+	const sections = document.createElement("div");
+	sections.id = "sectionSelector";
+	dashboard.appendChild(sections);
+	create_section_selector("sectionSelector");
 	// verify that everything ran smoothly
 	char_div.classList.add("module");
-	bar.classList.add("module");
+	//bar.classList.add("module");
+	sections.classList.add("module")
 	console.log('working');
 
 });

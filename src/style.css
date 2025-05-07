@@ -1,24 +1,7 @@
-
-/*
-This CSS governs the appearance of our site.
-You can find the basic concepts of CSS here: https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/How_CSS_works
-*/
-
-/*
-This makes the border and padding be counted as part of the element's size.
-https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Box_model
-It switches from
-	https://mdn.mozillademos.org/files/13647/box-model-standard-small.png
-to
-	https://mdn.mozillademos.org/files/13649/box-model-alt-small.png
-*/
 * {
 	box-sizing: border-box;
 }
 
-/*
-Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
-*/
 html, body, figure {
 	width: 100%;
 	padding: 0;
@@ -49,29 +32,28 @@ body {
 
 
 #main-title {
-	position: absolute;
-	top: 10px;
-	left: 20px;
-	padding: 10px;
-	font-weight: bold;
-	z-index: 100;
-	/* default text */
-	color: rgb(255, 255, 255);
-	font-family: sans-serif;
+	position: static;        /* instead of absolute */
+	margin: 1rem 1rem 0.5rem;/* top/right 1rem, bottom 0.5rem */
+	padding: 0;              /* you can remove its extra padding */
 	font-size: 1.5rem;
+	color: #fff;
+	z-index: auto;
   }
-
-  
 
 #dashboard {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	gap: 1rem;
-	padding: 1rem;
+	padding: 0 1rem 1rem;
   }
-  .module, /* if you give each child a “module” class… */
+  .module,
   #chartdiv,
-  #module-container {
+  #interactivebar {
+	background: #20232a;
+	padding: 1rem;
+	border-radius: 8px;
+  }
+  #sectionSelector {
 	background: #20232a;
 	padding: 1rem;
 	border-radius: 8px;
