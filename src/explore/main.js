@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ─── 1) LOAD THE DATA ───────────────────────────────
     // This path is relative to your server root (/data/DF_Clean.csv),
     // so make sure you're serving from the project root.
-    const data = await d3.csv('/data/DF_Clean.csv', d3.autoType);
+    const data = await d3.csv('../../data/DF_Clean.csv', d3.autoType);
     console.log(`Loaded ${data.length} respondents`);
 
-    const data_ethnicity = await d3.csv('/data/Q290_with_category.csv', d3.autoType);
+    const data_ethnicity = await d3.csv('../../data/Q290_with_category.csv', d3.autoType);
     console.log("Loaded data:", data_ethnicity.slice(0, 5)); // Show first 5 rows
 
     function updateDemographicChart() {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         chartInstance = drawGenericDonut({
           labels,
           values,
-          colors: ['#66001a', '#e91e63', '#ffb6c1', '#b23a9a', '#2e0854', '#8e44ad']
+          colors: [' #66001a', ' #e91e63', ' #ffb6c1', ' #b23a9a', ' #2e0854', ' #8e44ad']
         });
       } else if (selected === 'sex') {
         const { labels, values } = getSexCounts(data);
@@ -201,14 +201,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         .text(d => countryNameMap[d.country] || d.country);
     });
 
-    d3.csv('data/Q290.csv').then(data => {
-      // Count occurrences of each code
-      const counts = {};
-      data.forEach(row => {
-        const code = row.Q290;
-        counts[code] = (counts[code] || 0) + 1;
-      });
-    });
 
   } catch (err) {
     console.error('Failed to load data or render charts:', err);

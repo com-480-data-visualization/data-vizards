@@ -4,3 +4,5 @@ data/country_embeddings.json
 data/DF_Clean.csv
 handwritten_answers.csv
 data/ethnicity_map.csv
+data/Q290.csv
+data/Q290_with_category.csv

@@ -1,8 +1,4 @@
-import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.esm.js';
-import { ArcElement, CategoryScale, Legend, Title } from 'https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.esm.js';
-
-// register any plugins you need
-Chart.register(ArcElement, CategoryScale, Legend, Title);
+const Chart = window.Chart;
 
 export function drawGenericDonut({
   labels,
