@@ -4,11 +4,15 @@ let chartInstance = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    console.log(typeof d3);
     // ─── 1) LOAD THE DATA ───────────────────────────────
     // This path is relative to your server root (/data/DF_Clean.csv),
     // so make sure you're serving from the project root.
     const data = await d3.csv('/data/DF_Clean.csv', d3.autoType);
     console.log(`Loaded ${data.length} respondents`);
+
+    const data_ethnicity = await d3.csv('/data/Q290_with_category.csv', d3.autoType);
+    console.log("Loaded data:", data_ethnicity.slice(0, 5)); // Show first 5 rows
 
     function updateDemographicChart() {
       const selected = document.querySelector('input[name="demCategory"]:checked').value;
@@ -79,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]
   });
 } else if (selected === 'ethnicity') {
-  const { labels, values } = getEthnicityCounts(data);
+  const { labels, values } = getEthnicityCounts(data_ethnicity);
   chartInstance = drawGenericDonut({
     labels,
     values,
@@ -88,8 +92,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       'rgb(236, 177, 125)', // Black
       'rgb(248, 107, 107)', // South Asian
       'rgb(255, 69, 63)', // East Asian
-      'rgb(107, 12, 12)', // Arabic/Central Asian
-      'rgb(47, 0, 0)'  // Other
+      'rgb(174, 22, 22)', // Arabic/Central Asian
+      'rgb(108, 4, 4)', // Southeast Asian
+      'rgb(53, 8, 8)', // Indigenous
+      'rgb(118, 68, 68)'  // Other
     ]
   });
 } else {
@@ -193,6 +199,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         .attr('font-family', 'Charter, serif')
         .attr('font-size', 12)
         .text(d => countryNameMap[d.country] || d.country);
+    });
+
+    d3.csv('data/Q290.csv').then(data => {
+      // Count occurrences of each code
+      const counts = {};
+      data.forEach(row => {
+        const code = row.Q290;
+        counts[code] = (counts[code] || 0) + 1;
+      });
     });
 
   } catch (err) {

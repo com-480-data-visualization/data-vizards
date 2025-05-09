@@ -1,3 +1,9 @@
+import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.esm.js';
+import { ArcElement, CategoryScale, Legend, Title } from 'https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.esm.js';
+
+// register any plugins you need
+Chart.register(ArcElement, CategoryScale, Legend, Title);
+
 export function drawGenericDonut({
   labels,
   values,
@@ -183,15 +189,17 @@ export function getEthnicityCounts(data) {
     3: 'South Asian',
     4: 'East Asian',
     5: 'Arabic/Central Asian',
-    6: 'Other'
+    6: 'Southeast Asian',
+    7: 'Indigenous',
+    8: 'Other'
   };
   // Initialize counts
   const counts = {};
   Object.values(valueMap).forEach(label => counts[label] = 0);
 
   data.forEach(person => {
-    const val = Number(person.Q290);
-    if (val >= 1 && val <= 6) {
+    const val = Number(person.mapped_category);
+    if (val >= 1 && val <= 8) {
       const label = valueMap[val];
       if (label) counts[label]++;
     }
