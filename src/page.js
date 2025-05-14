@@ -8,6 +8,7 @@ function whenDocumentLoaded(action) {
 	}
 }
 
+
 const barCountryMapping = {
 	0: "AU",  // Bar 10 highlights Australia
 	1: "US",  // Bar 1 highlights United States
@@ -22,10 +23,10 @@ const barCountryMapping = {
   };
 
 const sectionMapping = {
-	0: "Global Survey",  // Bar 10 highlights Australia
-	1: "Social capital and trust survey",  // Bar 1 highlights United States
-	2: "Ethical values and norms survey",  // Bar 2 highlights Canada
-	3: "Social values and stereotypes survey",  // Bar 3 highlights Spain
+	0: "Global",  // Bar 10 highlights Australia
+	1: "Social capital and trust",  // Bar 1 highlights United States
+	2: "Ethical values and norms",  // Bar 2 highlights Canada
+	3: "Social values and stereotypes",  // Bar 3 highlights Spain
   };
 
 
@@ -104,6 +105,88 @@ function create_interactive_globe(container_id){
 		resolve({ root, chart, polygonSeries });
 		});
   });
+}
+
+// Helper: Randomly sample n elements from an array without replacement
+function sampleFromArray(arr, n) {
+  const result = [];
+  const tempArr = [...arr]; // make a shallow copy
+  const count = Math.min(n, tempArr.length);
+  for (let i = 0; i < count; i++) {
+    const randomIndex = Math.floor(Math.random() * tempArr.length);
+    result.push(tempArr[randomIndex]);
+    tempArr.splice(randomIndex, 1);
+  }
+  return result;
+}
+
+/**
+ * Selects a random subset of questions from a given topic and cleans the dataset by:
+ * - Keeping only relevant question columns and the country column ("B_COUNTRY_ALPHA")
+ * - Removing rows with any negative or missing numeric answers.
+ *
+ * @param {Array<Object>} dfMetaAnswers - Array of objects (metadata) with question indices and topics.
+ * @param {Array<Object>} dfClean - Array of objects representing the full dataset of responses.
+ * @param {string} selectedTopic - The topic from which to sample questions.
+ * @param {number} [nbrOfQuestions=2] - How many questions to randomly select.
+ * @returns {{selectedQuestions: Array<Object>, validAnswers: Array<Object>}}
+ */
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 2) {
+  // Filter questions based on selected topic.
+  let filteredQuestions;
+  if (selectedTopic === 'Global') {
+    // For Global, exclude questions from the Demographics topic.
+    filteredQuestions = dfMetaAnswers.filter(question => question.topic !== 'Demographics');
+  } else {
+    filteredQuestions = dfMetaAnswers.filter(question => question.topic === selectedTopic);
+  }
+  console.log("Filtered questions:", filteredQuestions);
+
+  // Randomly sample the desired number of questions.
+  const selectedQuestions = sampleFromArray(filteredQuestions, nbrOfQuestions);
+  console.log("Selected questions:", selectedQuestions);
+
+  // Build a list of keys: the question indices plus the country column.
+  const meaningfulFeatures = selectedQuestions.map(question => question.index);
+  meaningfulFeatures.push('B_COUNTRY_ALPHA');
+  console.log("Meaningful features:", meaningfulFeatures);
+
+  // Create a new dataset limited to only the columns of interest.
+  let validAnswers = dfClean.map(row => {
+    const newRow = {};
+    meaningfulFeatures.forEach(feature => {
+      newRow[feature] = row[feature];
+    });
+    return newRow;
+  });
+  console.log("Mapped responses (before filtering):", validAnswers);
+
+  const originalCount = validAnswers.length;
+  // Filter rows: for every feature except the country, convert to number
+  // and ensure it is not NaN and is >= 0.
+  validAnswers = validAnswers.filter(row =>
+    meaningfulFeatures.every(feature => {
+      if (feature === 'B_COUNTRY_ALPHA') return true;
+      const value = row[feature];
+      const num = Number(value);
+      return !isNaN(num) && num >= 0;
+    })
+  );
+
+  const removedParticipants = originalCount - validAnswers.length;
+  console.log(`Removed ${removedParticipants} participants who did not answer all selected questions.`);
+  
+  return { selectedQuestions, validAnswers };
+}
+
+
+
+async function run_quiz(topic){
+	const {data_clean,data_answers} = await loadData()
+	const {selectedQuestions, validAnswers} = selectRandomQuestionsAndClean(data_answers, data_clean, topic)
+	console.log("selected questions:", selectedQuestions)
+	console.log("valid answers:", validAnswers.slice(1, 5))
+	
 }
 
 function create_interactive_bar(globe,name="Ethical Value X",subtitle="Question"){
@@ -242,8 +325,9 @@ function create_section_selector(container_id,globe){
 			d3.select(this).attr("fill", "gray");
 		})
 		.on("click", (event, d) => {
-			console.log('Selected: '+sectionMapping[d])
+			console.log('Selected: '+ sectionMapping[d])
 			//
+			run_quiz(sectionMapping[d])
 			const oldDiv = document.getElementById(container_id);
   			const parent = oldDiv.parentNode;
 			const newDiv = document.createElement("div");
@@ -256,7 +340,22 @@ function create_section_selector(container_id,globe){
 		
 }
 
+async function loadData() {
+  try {
+    const data_clean = await d3.csv("data/df_clean.csv", d3.autoType);
+	const data_answers = await d3.csv("data/handwritten_answers.csv", d3.autoType);
+    console.log("Data loaded successfully:", data_answers.slice(0, 5)); // Log first 5 rows
+    return {data_clean,data_answers};
+  } catch (error) {
+    console.error("Error loading the CSV file:", error);
+    throw error;
+  }
+}
+
 whenDocumentLoaded(async () => {
+	// Load the data
+	const surveyData = await loadData();
+	
 	// create header
 	const header = d3.select("body")
     .insert("div", ":first-child")
