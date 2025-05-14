@@ -182,10 +182,21 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
 
 
 async function run_quiz(topic){
+	// Load data
 	const {data_clean,data_answers} = await loadData()
+
+	// Select questions and remove participants with invalid answers for these specific ones
 	const {selectedQuestions, validAnswers} = selectRandomQuestionsAndClean(data_answers, data_clean, topic)
 	console.log("selected questions:", selectedQuestions)
-	console.log("valid answers:", validAnswers.slice(1, 5))
+	//console.log("valid answers:", validAnswers.slice(1, 5))
+	selectedQuestions.forEach((question, index) => {
+	console.log(`Question ${index + 1}:`);
+	console.log(`Index: ${question.index}`);
+	console.log(`Specific question: ${question.specific_question}`);
+	console.log(`Overall question: ${question.overall_question}`);
+	// Here you can add any additional processing for each question.
+	});
+
 	
 }
 
