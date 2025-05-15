@@ -24,7 +24,7 @@ const barCountryMapping = {
 
 const sectionMapping = {
 	0: "Global",  // Bar 10 highlights Australia
-	1: "Social capital and trust",  // Bar 1 highlights United States
+	1: "Social capital, trust and organizational membership",  // Bar 1 highlights United States
 	2: "Ethical values and norms",  // Bar 2 highlights Canada
 	3: "Social values and stereotypes",  // Bar 3 highlights Spain
   };
@@ -120,17 +120,6 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-/**
- * Selects a random subset of questions from a given topic and cleans the dataset by:
- * - Keeping only relevant question columns and the country column ("B_COUNTRY_ALPHA")
- * - Removing rows with any negative or missing numeric answers.
- *
- * @param {Array<Object>} dfMetaAnswers - Array of objects (metadata) with question indices and topics.
- * @param {Array<Object>} dfClean - Array of objects representing the full dataset of responses.
- * @param {string} selectedTopic - The topic from which to sample questions.
- * @param {number} [nbrOfQuestions=2] - How many questions to randomly select.
- * @returns {{selectedQuestions: Array<Object>, validAnswers: Array<Object>}}
- */
 function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 2) {
   // Filter questions based on selected topic.
   let filteredQuestions;
@@ -181,7 +170,7 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
 
 
 
-async function run_quiz(topic){
+async function run_quiz(topic,container_id, globe){
 	// Load data
 	const {data_clean,data_answers} = await loadData()
 
@@ -194,7 +183,18 @@ async function run_quiz(topic){
 	console.log(`Index: ${question.index}`);
 	console.log(`Specific question: ${question.specific_question}`);
 	console.log(`Overall question: ${question.overall_question}`);
+	console.log(`Possible answers: ${question.possible_answers}`);
 	// Here you can add any additional processing for each question.
+	const oldDiv = document.getElementById(container_id);
+	///// Problem with oldDiv
+	const parent = oldDiv.parentNode;
+	const newDiv = document.createElement("div");
+	newDiv.id = "interactivebar";
+	newDiv.classList.add("module");
+	parent.replaceChild(newDiv, oldDiv);
+	d3.select(container_id).remove();
+	d = create_interactive_bar(globe,question.overall_question, question.specific_question);
+	console.log(d);
 	});
 
 	
@@ -284,9 +284,11 @@ function create_interactive_bar(globe,name="Ethical Value X",subtitle="Question"
 		.attr("fill", "#ccc")
 		.style("font-size", "12px") 
 		.text(d => d);
+	return d;
 }
 
 function create_section_selector(container_id,globe){
+	console.log("container_id", container_id)
 	const data = d3.range(0, Object.keys(sectionMapping).length, 1);
 	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 80;
 	const bar_width = 10, barGap = 60;
@@ -338,15 +340,7 @@ function create_section_selector(container_id,globe){
 		.on("click", (event, d) => {
 			console.log('Selected: '+ sectionMapping[d])
 			//
-			run_quiz(sectionMapping[d])
-			const oldDiv = document.getElementById(container_id);
-  			const parent = oldDiv.parentNode;
-			const newDiv = document.createElement("div");
-  			newDiv.id = "interactivebar";
-			newDiv.classList.add("module");
-			parent.replaceChild(newDiv, oldDiv);
-			d3.select(container_id).remove();
-			create_interactive_bar(globe,sectionMapping[d]);
+			run_quiz(sectionMapping[d],container_id, globe)
 		});
 		
 }
