@@ -200,92 +200,120 @@ async function run_quiz(topic,container_id, globe){
 	
 }
 
-function create_interactive_bar(globe,name="Ethical Value X",subtitle="Question"){
-	// Set up dimensions
-	const data = d3.range(10, 0, -1);
-	const width = 500, height = 500, barHeight = 7, offsetLeft = 50, offsetTop = 80;
-	const barGap = 30;
-	
-	//setup title
-	const titleContainer = d3.select("#interactivebar")
-  		.insert("div", ":first-child")
-    	.attr("id", "module-title");
+function create_interactive_bar(globe, name = "Ethical Value X", subtitle = "Question") {
+  // Define your mapping dictionary.
+  const mapping = {
+    "Trust completely": 1,
+    "Trust somewhat": 2,
+    "Do not trust very much": 3,
+    "Do not trust at all": 4
+  };
 
-	titleContainer.append("div")
-		.attr("class", "main-title")
-		.text(name);
+  // Create data as an array of [label, value] pairs.
+  // Sort descending by numeric value, e.g., highest value first.
+  const data = Object.entries(mapping).sort((a, b) => b[1] - a[1]);
 
-	titleContainer.append("div")
-		.attr("class", "module-subtitle")
-		.text(subtitle);
+  // Set up dimensions
+  const width = 500, height = 500;
+  const barHeight = 7, offsetLeft = 50, offsetTop = 80;
+  const barGap = 30;
 
-	// Create an SVG
-	const svg = d3.select("#interactivebar")
-	  .append("svg")
-	  .attr("width", width)
-	  .attr("height", height);
-	
-	// Scale for bar lengths (longer bars for higher numbers)
-	const xScale = d3.scaleLinear()
-	  .domain([0, d3.max(data)])
-	  .range([0, width - offsetLeft - 30]); // 20 is just a small margin
-	
-	// Append bars
-	svg.selectAll("rect")
-	  .data(data)
-	  .enter().append("rect")
-		.attr("x", offsetLeft)
-		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap))
-		.attr("width", d => xScale(d))
-		.attr("height", barHeight - 4) // slight gap
-		.attr("fill", "gray")
-		// Highlight on hover
-		.on("mouseover", function() {
-		  d3.select(this).attr("fill", "white");
-		})
-		.on("mouseout", function() {
-		  d3.select(this).attr("fill", "gray");
-		})
-		.on("click", (event, d) => {
-			// Clear previous active state from all countries.
-			if (globe.polygonSeries) {
-				globe.polygonSeries.mapPolygons.each(function(polygon) {
-				polygon.set("active", false);
-			  });
-			}
-			// Look up the country associated with this bar's value.
-			const countryID = barCountryMapping[d];
-			if (countryID && globe.polygonSeries) {
-			  // Use getDataItemById to retrieve the data item for the country.
-			  let dataItem = globe.polygonSeries.getDataItemById(countryID);
-			  if (dataItem) {
-				// Then get the mapPolygon from the data item.
-				let polygon = dataItem.get("mapPolygon");
-				if (polygon) {
-				  polygon.set("active", true);
-				} else {
-				  console.warn("No polygon found for country: " + countryID);
-				}
-			  } else {
-				console.warn("No data item found for id: " + countryID);
-			  }
-			} else {
-			  console.warn("No country mapping defined for bar value: " + d);
-			}
-		  });
-	
-	// Append the text at the tip of each bar
-	svg.selectAll("text")
-	  .data(data)
-	  .enter().append("text")
-		.attr("x", d => offsetLeft + xScale(d) + 10)
-		.attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
-		.attr("alignment-baseline", "middle")
-		.attr("fill", "#ccc")
-		.style("font-size", "12px") 
-		.text(d => d);
-	return d;
+  // Setup title
+  const titleContainer = d3.select("#interactivebar")
+    .insert("div", ":first-child")
+    .attr("id", "module-title");
+
+  titleContainer.append("div")
+    .attr("class", "main-title")
+    .text(name);
+
+  titleContainer.append("div")
+    .attr("class", "module-subtitle")
+    .text(subtitle);
+
+  // Create an SVG
+  const svg = d3.select("#interactivebar")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  // Scale for bar lengths (using the numeric value d[1])
+  const maxVal = d3.max(data, d => d[1]);
+  const xScale = d3.scaleLinear()
+    .domain([0, maxVal])
+    .range([0, width - offsetLeft - 30]);  // subtracting a margin
+
+  // Append the bars
+  svg.selectAll("rect")
+    .data(data)
+    .enter().append("rect")
+      .attr("x", offsetLeft)
+      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap))
+      .attr("width", d => xScale(d[1]))
+      .attr("height", barHeight - 4)  // slight gap for clarity
+      .attr("fill", "gray")
+      // Highlight on hover
+      .on("mouseover", function() {
+          d3.select(this).attr("fill", "white");
+      })
+      .on("mouseout", function() {
+          d3.select(this).attr("fill", "gray");
+      })
+      .on("click", (event, d) => {
+          // Clear previous active state from all countries.
+          if (globe.polygonSeries) {
+              globe.polygonSeries.mapPolygons.each(function(polygon) {
+                  polygon.set("active", false);
+              });
+          }
+          // Look up the country associated with this bar's numeric value.
+          const countryID = barCountryMapping[d[1]];
+          if (countryID && globe.polygonSeries) {
+              let dataItem = globe.polygonSeries.getDataItemById(countryID);
+              if (dataItem) {
+                  let polygon = dataItem.get("mapPolygon");
+                  if (polygon) {
+                      polygon.set("active", true);
+                  } else {
+                      console.warn("No polygon found for country: " + countryID);
+                  }
+              } else {
+                  console.warn("No data item found for id: " + countryID);
+              }
+          } else {
+              console.warn("No country mapping defined for bar value: " + d[1]);
+          }
+      });
+
+  // Append the descriptive text at the tip of each bar (to the right)
+  svg.selectAll("text.label")
+    .data(data)
+    .enter().append("text")
+      .attr("class", "label")
+      .attr("x", d => offsetLeft + xScale(d[1]) + 10)
+      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
+      .attr("alignment-baseline", "middle")
+      .attr("fill", "#ccc")
+      .style("font-size", "12px")
+      .text(d => d[0]);
+
+  // Append the numeric value on the left of each bar
+  svg.selectAll("text.number")
+    .data(data)
+    .enter().append("text")
+      .attr("class", "number")
+      .attr("x", offsetLeft - 10)
+      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
+      .attr("text-anchor", "end")  // right-align the numbers
+      .attr("alignment-baseline", "middle")
+      .attr("fill", "#ccc")
+      .style("font-size", "12px")
+      .text(d => d[1]);
+
+  return data;
 }
+
+
 
 function create_section_selector(container_id,globe){
 	console.log("container_id", container_id)
