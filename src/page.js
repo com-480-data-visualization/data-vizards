@@ -168,111 +168,34 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
   return { selectedQuestions, validAnswers };
 }
 
-
-/*
-async function run_quiz(topic,container_id, globe){
-	// Load data
-	const {data_clean,data_answers} = await loadData()
-
-	// Select questions and remove participants with invalid answers for these specific ones
-	const {selectedQuestions, validAnswers} = selectRandomQuestionsAndClean(data_answers, data_clean, topic)
-	console.log("selected questions:", selectedQuestions)
-	//console.log("valid answers:", validAnswers.slice(1, 5))
-	selectedQuestions.forEach((question, index) => {
-	console.log(`Question ${index + 1}:`);
-	console.log(`Index: ${question.index}`);
-	console.log(`Specific question: ${question.specific_question}`);
-	console.log(`Overall question: ${question.overall_question}`);
-	//console.log(`Possible answers: ${question.possible_answers}`);
-	// Here you can add any additional processing for each question.
-	const oldDiv = document.getElementById(container_id);
-	///// Problem with oldDiv
-	const parent = oldDiv.parentNode;
-	const newDiv = document.createElement("div");
-	newDiv.id = "interactivebar";
-	newDiv.classList.add("module");
-	parent.replaceChild(newDiv, oldDiv);
-	d3.select(container_id).remove();
-	d = create_interactive_bar(globe,question.overall_question, question.specific_question, question.possible_answers);
-	console.log(d);
-	});
-
-	
-}
-
-// VERSION 2
-async function run_quiz(topic, container_id, globe) {
-  // Load data
+async function run_quiz(topic, containerId, globe) {
+  // Load data and select questions
   const { data_clean, data_answers } = await loadData();
-
-  // Select questions and clean answers
   const { selectedQuestions, validAnswers } = selectRandomQuestionsAndClean(data_answers, data_clean, topic);
-  console.log("selected questions:", selectedQuestions);
+  console.log("Selected questions:", selectedQuestions);
 
-  let currentIndex = 0;
+  // Helper function that resets (or creates) the container.
+  function resetContainer(id) {
+    let container = document.getElementById(id);
+    if (!container) {
+      container = document.createElement("div");
+      container.id = id;
+      document.body.appendChild(container);
+    } else {
+      container.innerHTML = "";
+    }
+    return container;
+  }
 
-  // Function to display a single question and wait for a bar selection.
+  // Function to show a single question and wait for a bar click.
   async function showQuestion(question) {
-    // Replace the container content
-    const oldDiv = document.getElementById(container_id);
-    const parent = oldDiv.parentNode;
-    const newDiv = document.createElement("div");
-    newDiv.id = "interactivebar";
-    newDiv.classList.add("module");
-    parent.replaceChild(newDiv, oldDiv);
-    d3.select(container_id).remove();
+  const container = resetContainer(containerId);
 
-    // Return a promise that resolves when a bar is clicked.
-    return new Promise(resolve => {
-      create_interactive_bar(globe, question.overall_question, question.specific_question, question.possible_answers, (d) => {
-        // Resolve the promise when a bar is selected.
-        resolve(d);
-      });
-    });
-  }
-
-  // Loop through each question sequentially.
-  while (currentIndex < selectedQuestions.length) {
-    const question = selectedQuestions[currentIndex];
-    console.log(`Question ${currentIndex + 1}:`, question);
-    
-    const selectedBar = await showQuestion(question);
-    console.log("Bar selected for current question:", selectedBar);
-
-    // You can now save the user's response or perform additional logic here before moving on.
-    
-    currentIndex++;
-  }
-
-  console.log("Quiz complete!");
-}
-*/
-async function run_quiz(topic, container_id, globe) {
-  // Load data
-  const { data_clean, data_answers } = await loadData();
-
-  // Select questions and clean answers
-  const { selectedQuestions, validAnswers } = selectRandomQuestionsAndClean(data_answers, data_clean, topic);
-  console.log("selected questions:", selectedQuestions);
-
-  let currentIndex = 0;
-
-  // Function to display a single question and wait for a bar selection
-  async function showQuestion(question) {
-  // Ensure the container exists or create/clear it appropriately.
-  let container = document.getElementById(container_id);
-  if (!container) {
-    container = document.createElement("div");
-    container.id = container_id;
-    document.body.appendChild(container);
-  } else {
-    container.innerHTML = "";
-  }
-  
-  const newDiv = document.createElement("div");
-  newDiv.id = "interactivebar";
-  newDiv.classList.add("module");
-  container.appendChild(newDiv);
+  // Create a dedicated interactive bar container inside our main container.
+  const barContainer = document.createElement("div");
+  barContainer.id = "interactivebar";
+  barContainer.classList.add("module");
+  container.appendChild(barContainer);
 
   // Return a promise that resolves when a bar is clicked.
   return new Promise(resolve => {
@@ -281,218 +204,89 @@ async function run_quiz(topic, container_id, globe) {
       question.overall_question,
       question.specific_question,
       question.possible_answers,
-      (selectedKey) => {  // now selectedKey is d[0], the key corresponding to the clicked bar.
-        console.log("Selected answer key:", selectedKey);
+      selectedKey => {
+        console.log("Selected answer key (from callback):", selectedKey);
         resolve(selectedKey);
       }
     );
   });
 }
-
-
-  // Create a loop to iterate through questions one at a time
-  while (currentIndex < selectedQuestions.length) {
-    const question = selectedQuestions[currentIndex];
-    console.log(`Question ${currentIndex + 1}:`, question);
-    
-    // Wait for the bar click on the current question.
-    const selectedBar = await showQuestion(question);
-    console.log("Bar selected for current question:", selectedBar);
-
-    // (store the answer or perform additional processing.)
+  // Initialize distances see what kind of object
+  // Where each individual is at dist 0
+  // Loop through questions one at a time.
+  for (const question of selectedQuestions) {
+    console.log("Processing question:", question);
+    const selectedKey = await showQuestion(question);
+    console.log("User selected:", selectedKey);
 	
-    currentIndex++;
+    // Compute distance with other users
+	//const dist_users += abs(validAnswers['question_idx'] - answer) / len(question.possible_answers)
+	//Average over the countries
+	//top_matches = df_distance.groupby('B_COUNTRY_ALPHA').mean(numeric_only=True).reset_index()
+	// Average over nbr of questions
+	//const dist = (1 - (top_matches['Distance'] /i)) * 100
   }
-
   console.log("Quiz complete!");
 }
 
 
 function fixMappingString(mapping) {
-  // Replace keys enclosed in single quotes with double quotes.
-  // This regex looks for keys in the form: 'key':
+  // Convert keys enclosed in single quotes to double quotes.
   let valid = mapping.replace(/'([^']+)'\s*:/g, '"$1":');
-
-  // Optionally, if you also have string values enclosed in single quotes,
-  // you can uncomment the following line to replace them with double quotes:
+  // Also replace string values enclosed in single quotes.
   valid = valid.replace(/:\s*'([^']+?)'/g, ': "$1"');
-
   return valid;
 }
 
-/*
-function create_interactive_bar(globe, name , subtitle, mapping) {
-  console.log("Loaded mapping",mapping);			
-  // Define your mapping dictionary.
-  //const mapping = {
-  //  "Trust completely": 1,
-  //  "Trust somewhat": 2,
-  //  "Do not trust very much": 3,
-  //  "Do not trust at all": 4
-  //};
-  const dict_mapping =JSON.parse(fixMappingString(mapping));
-  console.log("Now as a dict:", dict_mapping)
-  // Ensure proper key conversion before inversion
-  const invertedMapping = Object.fromEntries(
-  Object.entries(dict_mapping).map(([key, value]) => [value, isNaN(key) ? key : Number(key)])
-  );
-
-  console.log("inverted mapping", invertedMapping);
-
-  // Create data as an array of [label, value] pairs.
-  // Sort descending by numeric value, e.g., highest value first.
-  const data = Object.entries(invertedMapping)
-  .sort((a, b) => Number(b[0]) - Number(a[0]))  // sort using the numeric score
-  .map(([score, label]) => [label, Number(score)]);  // reformat to [label, numericScore]
-
-  // Set up dimensions
-  const width = 500, height = 500;
-  const barHeight = 7, offsetLeft = 50, offsetTop = 80;
-  const barGap = 30;
-
-  // Setup title
-  const titleContainer = d3.select("#interactivebar")
-    .insert("div", ":first-child")
-    .attr("id", "module-title");
-
-  titleContainer.append("div")
-    .attr("class", "main-title")
-    .text(name);
-
-  titleContainer.append("div")
-    .attr("class", "module-subtitle")
-    .text(subtitle);
-
-  // Create an SVG
-  const svg = d3.select("#interactivebar")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-  // Scale for bar lengths (using the numeric value d[1])
-  const maxVal = d3.max(data, d => d[1]);
-  const xScale = d3.scaleLinear()
-    .domain([0, maxVal])
-    .range([0, width - offsetLeft - 30]);  // subtracting a margin
-
-  // Append the bars
-  svg.selectAll("rect")
-    .data(data)
-    .enter().append("rect")
-      .attr("x", offsetLeft)
-      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap))
-      .attr("width", d => xScale(d[1]))
-      .attr("height", barHeight - 4)  // slight gap for clarity
-      .attr("fill", "gray")
-      // Highlight on hover
-      .on("mouseover", function() {
-          d3.select(this).attr("fill", "white");
-      })
-      .on("mouseout", function() {
-          d3.select(this).attr("fill", "gray");
-      })
-      .on("click", (event, d) => {
-          // Clear previous active state from all countries.
-		  console.log(d)
-          if (globe.polygonSeries) {
-              globe.polygonSeries.mapPolygons.each(function(polygon) {
-                  polygon.set("active", false);
-              });
-          }
-          // Look up the country associated with this bar's numeric value.
-          const countryID = barCountryMapping[d];
-          if (countryID && globe.polygonSeries) {
-              let dataItem = globe.polygonSeries.getDataItemById(countryID);
-              if (dataItem) {
-                  let polygon = dataItem.get("mapPolygon");
-                  if (polygon) {
-                      polygon.set("active", true);
-                  } else {
-                      console.warn("No polygon found for country: " + countryID);
-                  }
-              } else {
-                  console.warn("No data item found for id: " + countryID);
-              }
-          } else {
-              console.warn("No country mapping defined for bar value: " + countryID);
-          }
-      });
-
-  // Append the descriptive text at the tip of each bar (to the right)
-  svg.selectAll("text.label")
-    .data(data)
-    .enter().append("text")
-      .attr("class", "label")
-      .attr("x", d => offsetLeft + xScale(d[1]) + 10)
-      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
-      .attr("alignment-baseline", "middle")
-      .attr("fill", "#ccc")
-      .style("font-size", "12px")
-      .text(d => d[0]);
-
-  // Append the numeric value on the left of each bar
-  svg.selectAll("text.number")
-    .data(data)
-    .enter().append("text")
-      .attr("class", "number")
-      .attr("x", offsetLeft - 10)
-      .attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
-      .attr("text-anchor", "end")  // right-align the numbers
-      .attr("alignment-baseline", "middle")
-      .attr("fill", "#ccc")
-      .style("font-size", "12px")
-      .text(d => d[1]);
-
-  return data;
-}
-*/
-
 function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
-  console.log("Loaded mapping", mapping);           
-  // Parse and reformat the mapping
+  console.log("Loaded mapping", mapping);
+  // Parse mapping with fixed JSON formatting.
   const dict_mapping = JSON.parse(fixMappingString(mapping));
   console.log("Now as a dict:", dict_mapping);
-  
-  // Invert mapping if needed and create data as array of [label, numericScore] pairs
+
+  // Invert the mapping and build a data array of [label, numericScore] pairs.
   const invertedMapping = Object.fromEntries(
     Object.entries(dict_mapping).map(([key, value]) => [value, isNaN(key) ? key : Number(key)])
   );
-  console.log("inverted mapping", invertedMapping);
-  
+  console.log("Inverted mapping:", invertedMapping);
+
   const data = Object.entries(invertedMapping)
-    .sort((a, b) => Number(b[0]) - Number(a[0]))  // sort using the numeric score
-    .map(([score, label]) => [label, Number(score)]);  // reformat to [label, numericScore]
+    .sort((a, b) => Number(b[0]) - Number(a[0]))
+    .map(([score, label]) => [label, Number(score)]);
 
-  // Set up dimensions
-  const width = 500, height = 500;
-  const barHeight = 7, offsetLeft = 50, offsetTop = 80;
-  const barGap = 30;
+  // Define layout constants.
+  const width = 500,
+        height = 500,
+        barHeight = 7,
+        offsetLeft = 50,
+        offsetTop = 80,
+        barGap = 30;
 
-  // Setup title
-  const titleContainer = d3.select("#interactivebar")
-    .insert("div", ":first-child")
+  // Use D3 to insert a title container in the interactive bar container.
+  const container = d3.select("#interactivebar");
+  const titleContainer = container.insert("div", ":first-child")
     .attr("id", "module-title");
 
   titleContainer.append("div")
     .attr("class", "main-title")
     .text(name);
+    
   titleContainer.append("div")
     .attr("class", "module-subtitle")
     .text(subtitle);
 
-  // Create an SVG
-  const svg = d3.select("#interactivebar")
-    .append("svg")
+  // Create an SVG element.
+  const svg = container.append("svg")
     .attr("width", width)
     .attr("height", height);
 
-  // Scale for bar lengths
+  // Define a linear scale for the bar lengths.
   const maxVal = d3.max(data, d => d[1]);
   const xScale = d3.scaleLinear()
     .domain([0, maxVal])
     .range([0, width - offsetLeft - 30]);
 
-  // Append the bars with a click handler that calls the onBarClick callback
+  // Append the bars.
   svg.selectAll("rect")
     .data(data)
     .enter().append("rect")
@@ -501,7 +295,6 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
       .attr("width", d => xScale(d[1]))
       .attr("height", barHeight - 4)
       .attr("fill", "gray")
-      // Highlight on hover
       .on("mouseover", function() {
           d3.select(this).attr("fill", "white");
       })
@@ -509,38 +302,22 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
           d3.select(this).attr("fill", "gray");
       })
       .on("click", (event, d) => {
-          console.log("Bar clicked:", d);
-          // Clear previous active state from all polygons.
-          if (globe.polygonSeries) {
-              globe.polygonSeries.mapPolygons.each(function(polygon) {
-                  polygon.set("active", false);
-              });
-          }
-          // Look up the country associated with this bar's numeric score.
-          const score = d[1];
-          const countryID = barCountryMapping ? barCountryMapping[score] : undefined;
-          if (countryID && globe.polygonSeries) {
-              let dataItem = globe.polygonSeries.getDataItemById(countryID);
-              if (dataItem) {
-                  let polygon = dataItem.get("mapPolygon");
-                  if (polygon) {
-                      polygon.set("active", true);
-                  } else {
-                      console.warn("No polygon found for country: " + countryID);
-                  }
-              } else {
-                  console.warn("No data item found for id: " + countryID);
-              }
-          } else {
-              console.warn("No country mapping defined for score: " + score);
-          }
-          // **NEW** Call the callback function to signal that a bar was clicked
-          if (typeof onBarClick === 'function') {
-              onBarClick(d);
-          }
-      });
+  console.log("Bar clicked, full d:", d); // Inspect the full array
+  if (d && d.length > 0) {
+    console.log("Passing label:", d[0]);
+    if (typeof onBarClick === 'function') {
+      onBarClick(data[d]);
+    }
+  } else {
+    console.warn("Clicked bar data is missing the label:", d);
+    if (typeof onBarClick === 'function') {
+      onBarClick(data[d]);
+    }
+  }
+});
 
-  // Append the descriptive text at the tip of each bar
+
+  // Append the descriptive labels at the end of each bar.
   svg.selectAll("text.label")
     .data(data)
     .enter().append("text")
@@ -552,7 +329,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
       .style("font-size", "12px")
       .text(d => d[0]);
 
-  // Append the numeric value on the left of each bar
+  // Append the numeric values on the left of each bar.
   svg.selectAll("text.number")
     .data(data)
     .enter().append("text")
@@ -567,6 +344,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
 
   return data;
 }
+
 
 function create_section_selector(container_id,globe){
 	console.log("container_id", container_id)
