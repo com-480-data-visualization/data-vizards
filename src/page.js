@@ -120,7 +120,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 2) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 5) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {
@@ -164,7 +164,11 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
 
   const removedParticipants = originalCount - validAnswers.length;
   console.log(`Removed ${removedParticipants} participants who did not answer all selected questions.`);
-  
+
+  // Initialize column distance to 0
+  validAnswers.forEach(user => {
+    user.distance = 0; // set cumulative distance to 0
+  });
   return { selectedQuestions, validAnswers };
 }
 
@@ -172,6 +176,10 @@ async function run_quiz(topic, containerId, globe) {
   // Load data and select questions
   const { data_clean, data_answers } = await loadData();
   const { selectedQuestions, validAnswers } = selectRandomQuestionsAndClean(data_answers, data_clean, topic);
+
+  // Initialize dist_by_country for heatmap
+  const distanceByCountry = {};
+
   console.log("Selected questions:", selectedQuestions);
 
   // Helper function that resets (or creates) the container.
@@ -205,7 +213,6 @@ async function run_quiz(topic, containerId, globe) {
       question.specific_question,
       question.possible_answers,
       selectedKey => {
-        console.log("Selected answer key (from callback):", selectedKey);
         resolve(selectedKey);
       }
     );
@@ -214,13 +221,44 @@ async function run_quiz(topic, containerId, globe) {
   // Initialize distances see what kind of object
   // Where each individual is at dist 0
   // Loop through questions one at a time.
+  question_nbr = 1;
   for (const question of selectedQuestions) {
     console.log("Processing question:", question);
     const selectedKey = await showQuestion(question);
     console.log("User selected:", selectedKey);
-	
+    console.log("With corresponds to answer:", selectedKey[1]);
+    console.log(validAnswers[0].distance);
+    const answer = selectedKey[1];
+    const question_idx = question.index;
+
     // Compute distance with other users
-	//const dist_users += abs(validAnswers['question_idx'] - answer) / len(question.possible_answers)
+
+    validAnswers.forEach(user => {
+      // Get the user's answer (str) for this question and convert it to a number.
+      const userAnswer = parseInt(user[question_idx], 10);
+      const country = user.B_COUNTRY_ALPHA;
+      // Compute the normalized absolute difference.
+      const diff = Math.abs(userAnswer - answer) / question.possible_answers.length;
+      // Accumulate the distance.
+      user.distance += diff;
+
+      if (!distanceByCountry[country]) {
+        distanceByCountry[country] = { totalDistance: 0, count: 0 };
+      }
+
+      // If you want to use the cumulative distance computed in the loop,
+      // use either user.distance (if still cumulative) or user.avgDistance if already divided.
+      distanceByCountry[country].totalDistance = user.distance / question_nbr;
+      distanceByCountry[country].count += 1;
+        });
+      console.log(distanceByCountry);
+
+
+    console.log(validAnswers[0].distance);
+
+    // question_count
+    question_nbr += 1;
+	  //validAnswers += abs(validAnswers[question_idx] - answer) / len(question.possible_answers)
 	//Average over the countries
 	//top_matches = df_distance.groupby('B_COUNTRY_ALPHA').mean(numeric_only=True).reset_index()
 	// Average over nbr of questions
