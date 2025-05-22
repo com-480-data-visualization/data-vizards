@@ -107,7 +107,7 @@ function create_interactive_globe(container_id){
   });
 }
 
-// Helper: Randomly sample n elements from an array without replacement
+//Randomly sample n elements from an array without replacement
 function sampleFromArray(arr, n) {
   const result = [];
   const tempArr = [...arr]; // make a shallow copy
@@ -218,37 +218,43 @@ async function run_quiz(topic, containerId, globe) {
     );
   });
 }
-  // Initialize distances see what kind of object
-  // Where each individual is at dist 0
+  // Initialize distances where each individual is at dist 0
   // Loop through questions one at a time.
   question_nbr = 1;
   for (const question of selectedQuestions) {
     console.log("Processing question:", question);
+    // Stores selected answer ["I don't agree", 3]
     const selectedKey = await showQuestion(question);
     console.log("User selected:", selectedKey);
     console.log("With corresponds to answer:", selectedKey[1]);
     console.log(validAnswers[0].distance);
+    // Stores answer mapped integer and question id ("Q79")
     const answer = selectedKey[1];
     const question_idx = question.index;
 
-    // Compute distance with other users
-
+    // Compute distance between resoondent with users from WVS
     validAnswers.forEach(user => {
+    // Change answer type from string to int: "2" => 2 
     const userAnswer = parseInt(user[question_idx], 10);
+    // Get user from WVS country of origin
     const country = user.B_COUNTRY_ALPHA;
-
+    
+    // Initialize distance to 0
     if (!user.hasOwnProperty("distance")) {
       user.distance = 0;
     }
-
+    // Calculate normalized distance (over answers range) for the current question
     const diff = Math.abs(userAnswer - answer) / Object.keys(question.possible_answers).length;
+
+    // Calculate normalized distance over all questions
     user.distance += diff;
     const normalized_dist = user.distance / question_nbr;
 
+    // Initialize distance by country if not already existing
     if (!distanceByCountry[country]) {
       distanceByCountry[country] = { totalDistance: 0, count: 0 };
     }
-
+    // Calculate the mean btw previous users from WVS responses and current WVS user
     const previousAvgDistance = distanceByCountry[country].totalDistance;
     const numPreviousUsers = distanceByCountry[country].count;
     const currentUserDistance = normalized_dist;
