@@ -1,0 +1,62 @@
+﻿index,overall_question,specific_question,possible_answers,topic
+Q1,How important is it in your life?,Family,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q2,How important is it in your life?,Friends,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q3,How important is it in your life?,Leisure time,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q4,How important is it in your life?,Politics,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q5,How important is it in your life?,Work,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q6,How important is it in your life?,Religion,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
+Q29,"Do you 
+strongly agree, agree, disagree, or strongly disagree?","On the whole, men make better political leaders than women do ","{'Strongly agree': 1, 'Agree': 2, 'Disagree': 3, 'Strongly agree': 4}","Social values, attitudes and stereotypes"
+Q37, Do you agree or disagree with them?,It is a duty towards society to have children ,"{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4}","Social values, attitudes and stereotypes"
+Q41, Do you agree or disagree with them?,"Work should always come first, even if it means less spare 
+time ","{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4}","Social values, attitudes and stereotypes"
+Q59,"Could you tell me for each whether you trust 
+people from this group completely, somewhat, not very much or not at all?",Your family,"{'Trust completely': 1, 'Trust somewhat': 2, 'Do not trust very much': 3, 'Do not trust at all': 4}","Social capital, trust and organizational membership"
+Q60,"Could you tell me for each whether you trust 
+people from this group completely, somewhat, not very much or not at all?",Your neighborhood,"{'Trust completely': 1, 'Trust somewhat': 2, 'Do not trust very much': 3, 'Do not trust at all': 4}","Social capital, trust and organizational membership"
+Q63,"Could you tell me for each whether you trust 
+people from this group completely, somewhat, not very much or not at all?",People from another nationality,"{'Trust completely': 1, 'Trust somewhat': 2, 'Do not trust very much': 3, 'Do not trust at all': 4}","Social capital, trust and organizational membership"
+Q75,"Could you tell me how much confidence you have in 
+them: is it a great deal of confidence, quite a lot of confidence, not very much confidence or none at all? ",Universities,"{'A great deal': 1, 'Quite a lot': 2, 'Not very much': 3, 'None at all': 4}","Social capital, trust and organizational membership"
+Q90,What do you think should international organizations prioritize? ,Being effective or being democratic?,"{'Being effective': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Being democratic': 10}","Social capital, trust and organizational membership"
+Q94,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Church or religious organization,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q95,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?","Sport or recreational organization, football/baseball/rugby team","{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q96,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?","Art, music or educational organization","{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q97,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Labor Union,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q98,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Political party,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q99,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Environmental organization,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q100,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Professional association,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q101,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Humanitarian or charitable organization,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q102,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Consumer Organization,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q103,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?","Self-help group, mutual aid group","{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q104,"Could you tell me whether you are 
+an active member, an inactive member or not a member of that type of organization?",Women's group,"{'Active member': 2, 'Inactive member': 1, ""Don't belong"":0}","Social capital, trust and organizational membership"
+Q159,Read the statement and say how much you agree or disagree with it.," Because of science and technology, there will be more opportunities for the next generation. ","{'Completely disagree': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Completly agree': 10}","Social values, attitudes and stereotypes"
+Q160,Read the statement and say how much you agree or disagree with it.,We depend too much on science and not enough on faith.,"{'Completely disagree': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Completly agree': 10}","Social values, attitudes and stereotypes"
+Q178,Can the following actions be justified?,Avoiding a fare on public transport,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q182,Can the following actions be justified?,Homosexuality,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q184,Can the following actions be justified?,Abortion,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q185,Can the following actions be justified?,Divorce,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q186,Can the following actions be justified?,Sex before marriage,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q187,Can the following actions be justified?,Suicide,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q188,Can the following actions be justified?,Euthanasia,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q189,Can the following actions be justified?,For a man to beat his wife,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q195,Can the following actions be justified?,Death penalty,"{'Never justifiable': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'Always justifiable': 10}",Ethical values and norms
+Q196,Should the government have the right to...,Keep people under video surveillance in public areas,"{'Definitely should have the right': 1, 'Probably should have the right': 2, 'Probably should not have the right': 3, 'Definitely should not have the right': 4}",Ethical values and norms
+Q197,Should the government have the right to...,Monitor all e-mails and Internet info exchange,"{'Definitely should have the right': 1, 'Probably should have the right': 2, 'Probably should not have the right': 3, 'Definitely should not have the right': 4}",Ethical values and norms
+Q260,Demographic,Sex,"{'Male': 1, 'Female': 2}",Demographics
+Q262,Demographic,Age,Numerical age,Demographics
+Q275,Demographic,Education,"{'No education': 0, 'Primary education' : 1,'Lower secondary education' : 2, 'Upper secondary education': 3, 'Post secondary education': 4, 'Short cycle tertiary education': 5, 'Bachelor': 6, 'Master': 7, 'Doctoral': 8}",Demographics
+Q287,Demographic,Economic class,"{'Upper class': 1, 'Upper middle class': 2, 'Lower middle class': 3, 'Working class': 4, 'Lower class': 5}",Demographics
+Q289,Demographic,Religion,"{ 'No': 0, 'Roman Catholic':  1, 'Protestant': 2, 'Orthodox': 3, 'Jew': 4, 'Muslim':  5, 'Hindu':  6,  'Buddhist': 7,  'Other (text)':8}",Demographics
+Q290,Demographic,Ethnic group,"{ 'White': 1, 'Black': 2, 'South Asian Indian, Pakistani, etc.': 3, 'East Asian Chinese, Japanese, etc.': 4, 'Arabic, Central Asian': 5, 'Other (text)': 6}",Demographics
