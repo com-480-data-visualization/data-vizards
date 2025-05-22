@@ -26,7 +26,7 @@ const sectionMapping = {
 	0: "Global",  // Bar 10 highlights Australia
 	1: "Social capital, trust and organizational membership",  // Bar 1 highlights United States
 	2: "Ethical values and norms",  // Bar 2 highlights Canada
-	3: "Social values and stereotypes",  // Bar 3 highlights Spain
+	3: "Social values, attitudes and stereotypes",  // Bar 3 highlights Spain
   };
 
 
@@ -234,39 +234,48 @@ async function run_quiz(topic, containerId, globe) {
     // Compute distance with other users
 
     validAnswers.forEach(user => {
-      // Get the user's answer (str) for this question and convert it to a number.
-      const userAnswer = parseInt(user[question_idx], 10);
-      const country = user.B_COUNTRY_ALPHA;
-      // Compute the normalized absolute difference.
-      const diff = Math.abs(userAnswer - answer) / question.possible_answers.length;
-      // Accumulate the distance.
-      user.distance += diff;
+    const userAnswer = parseInt(user[question_idx], 10);
+    const country = user.B_COUNTRY_ALPHA;
 
-      if (!distanceByCountry[country]) {
-        distanceByCountry[country] = { totalDistance: 0, count: 0 };
-      }
+    if (!user.hasOwnProperty("distance")) {
+      user.distance = 0;
+    }
 
-      // If you want to use the cumulative distance computed in the loop,
-      // use either user.distance (if still cumulative) or user.avgDistance if already divided.
-      distanceByCountry[country].totalDistance = user.distance / question_nbr;
-      distanceByCountry[country].count += 1;
-        });
-      console.log(distanceByCountry);
+    const diff = Math.abs(userAnswer - answer) / Object.keys(question.possible_answers).length;
+    user.distance += diff;
+    const normalized_dist = user.distance / question_nbr;
 
+    if (!distanceByCountry[country]) {
+      distanceByCountry[country] = { totalDistance: 0, count: 0 };
+    }
 
-    console.log(validAnswers[0].distance);
+    const previousAvgDistance = distanceByCountry[country].totalDistance;
+    const numPreviousUsers = distanceByCountry[country].count;
+    const currentUserDistance = normalized_dist;
 
-    // question_count
-    question_nbr += 1;
-	  //validAnswers += abs(validAnswers[question_idx] - answer) / len(question.possible_answers)
-	//Average over the countries
-	//top_matches = df_distance.groupby('B_COUNTRY_ALPHA').mean(numeric_only=True).reset_index()
-	// Average over nbr of questions
-	//const dist = (1 - (top_matches['Distance'] /i)) * 100
+    distanceByCountry[country].totalDistance = (previousAvgDistance * numPreviousUsers + currentUserDistance) / (numPreviousUsers + 1);
+    distanceByCountry[country].count += 1;
+  });
+  console.log("dist_by_country", distanceByCountry);
+
+  // Increment question count after processing all users for this question
+  question_nbr += 1;
+
   }
-  console.log("Quiz complete!");
-}
+  // Find the country with the smallest totalDistance
+  const closestCountry = Object.entries(distanceByCountry).reduce((closest, [country, data]) => {
+    return data.totalDistance < closest.totalDistance ? { country, totalDistance: data.totalDistance } : closest;
+  }, { country: null, totalDistance: Infinity });
 
+  console.log("Country with smallest distance:", closestCountry);
+  console.log("with a final score of:", compute_final_score(closestCountry.totalDistance), "%")
+  console.log("Quiz complete!");
+
+
+}
+function compute_final_score(dist){
+  return(((1 - dist) * 100).toFixed(2))
+}
 
 function fixMappingString(mapping) {
   // Convert keys enclosed in single quotes to double quotes.
@@ -444,7 +453,7 @@ function create_section_selector(container_id,globe){
 
 async function loadData() {
   try {
-    const data_clean = await d3.csv("data/df_clean.csv", d3.autoType);
+    const data_clean = await d3.csv("data/subset_df_clean.csv", d3.autoType);
 	const data_answers = await d3.csv("data/handwritten_answers.csv", d3.autoType);
     console.log("Data loaded successfully:", data_answers.slice(0, 5)); // Log first 5 rows
     return {data_clean,data_answers};
