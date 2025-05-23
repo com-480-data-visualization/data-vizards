@@ -836,8 +836,8 @@ function create_interactive_globe(container_id){
 			  orientation: "vertical",
 			  startColor: am5.color(0xeeeeee),
 			  endColor: am5.color(0x0052cc),
-        startText:  "Low ",
-        endText:    "High"
+        startText:  "Low Similarity",
+        endText:    "High Similarity"
 			})
     );
 
@@ -1113,7 +1113,7 @@ function create_section_selector(container_id,globe){
 	.style("padding-top", "20px")       // Adjust vertical position
 	.style("color", "white")            // Set text color to white
 	.style("font-size", "24px")         // Increase the font size
-	.text("Section Selection");
+	.text("Select Your Topic");
 
 	// Create an SVG
 	const svg = d3.select("#"+container_id)
@@ -1175,12 +1175,37 @@ function create_introduction(container_id,globe){
 	  .attr("width", width)
 	  .attr("height", height);
 
-	svg.append("text")
+  const introText = "Hello!  Welcome in the Data-Vizards lair! \n\
+                      Have you ever wondered whether you’d get along with people if you \n\
+                      moved abroad? We have—and that’s exactly where this project began. \n\
+                      Our aim was to quantify how well someone might fit in when they \n\
+                      relocate to another country. \n\
+                      So we rolled up our sleeves and dove into the World Values Survey, \n\
+                      mining questions about trust, tolerance, and friendship to calculate a \n\
+                      “cultural compatibility” score for every nation on the map. \n\
+                      But we didn’t stop at a single number. We wanted you to explore how \n\
+                      different groups see the world, too—a woman moving abroad might \n\
+                      care most about what other women think, just as age, religion, \n\
+                      economic class, and more can shape your experience. \n\
+                      That’s why we give you the option to choose from multiple survey \n\
+                      filters, view an interactive map of your best-match countries, and then \n\
+                      drill down into the detailed responses of each country and \n\
+                      demographic group."
+  const formatedText = introText.split("\n");
+
+	const text = svg.append("text")
       .attr("x", 20)
       .attr("y", 20)
-	  .attr("class", "intro_text")
-	  .attr('fill','white')
-      .text("Hello!  Welcome in the Data-Vizards lair!");
+      .attr("class", "intro_text")
+      .attr('fill','white')
+      .attr('text-align','center')
+
+  text.selectAll("tspan")
+      .data(formatedText)
+      .enter().append("tspan")
+      .attr("x", text.attr("x"))           // reset x each line
+      .attr("dy", (d,i) => i === 0 ? 0 : "1.2em")  // first line at y, others shifted
+      .text(d => d);
 
 	const btnGroup = svg.append("g")
       .attr("transform", "translate(400,400)")
@@ -1238,7 +1263,10 @@ whenDocumentLoaded(async () => {
     .attr("id", "explore-title")
     .style("cursor", "pointer")
     .text("Explore")
-    .on("click", () => console.log('Explore'));
+    .on("click", () => {
+      console.log('Explore');
+      window.location.href = 'src/explore/explore.html'
+    });
 	// Create main dashboard
 	const dashboard = document.createElement("div");
 	dashboard.id = "dashboard";
