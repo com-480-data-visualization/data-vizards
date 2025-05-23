@@ -8,18 +8,7 @@ function whenDocumentLoaded(action) {
 	}
 }
 
-const barCountryMapping = {
-	0: "AU",  // Bar 10 highlights Australia
-	1: "US",  // Bar 1 highlights United States
-	2: "CA",  // Bar 2 highlights Canada
-	3: "ES",  // Bar 3 highlights Spain
-	4: "FR",  // Bar 4 highlights France
-	5: "DE",  // Bar 5 highlights Germany
-	6: "BR",  // Bar 6 highlights Brazil
-	7: "RU",  // Bar 7 highlights Russia
-	8: "IN",  // Bar 8 highlights India
-	9: "CH",  // Bar 9 highlights Switzerland
-  };
+/* Mappings */
 
 const sectionMapping = {
 	0: "Global",  // Bar 10 highlights Australia
@@ -532,7 +521,6 @@ const codeISOMapping = {
   'AX': 'Åland Islands',
 };
 
-
 const allCountries = am5geodata_worldLow.features.map(f => ({
   id:      f.id,       
   value:   0           
@@ -848,8 +836,8 @@ function create_interactive_globe(container_id){
 			  orientation: "vertical",
 			  startColor: am5.color(0xeeeeee),
 			  endColor: am5.color(0x0052cc),
-        startText:  "min",
-        endText:    "max"
+        startText:  "Low ",
+        endText:    "High"
 			})
     );
 
