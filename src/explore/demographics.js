@@ -52,7 +52,6 @@ export function drawGenericDonut({
         },
         tooltip: {
           enabled: true,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
           titleFont: {
             size: 22,
             family: fontFamily
