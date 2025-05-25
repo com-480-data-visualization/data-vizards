@@ -1,4 +1,5 @@
 const Chart = window.Chart;
+let chartInstance = null;
 
 export function drawGenericDonut({
   labels,
@@ -7,46 +8,73 @@ export function drawGenericDonut({
   fontFamily = 'Charter, serif'
 }) {
   const ctx = document.getElementById('demoDonut').getContext('2d');
-  const chart = new Chart(ctx, {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+  chartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels,
+      labels: labels,
       datasets: [{
         data: values,
-        backgroundColor: colors
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: '#fff'
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
+     aspectRatio: 1,
+      layout: {
+        padding: 20
+      },
       plugins: {
         legend: {
-          position: 'right',
+          position: 'left',
+          align: 'center',
           labels: {
             color: '#fff',
             font: {
               family: fontFamily,
-              size: 16
-            }
-          }
+              size: 24
+            },
+            usePointStyle: true,
+            pointStyle: 'rect',
+            padding: 20,
+            boxWidth: 25,
+            boxHeight: 25
+          },
+          display: false,
+          fullSize: false,
+          rtl: false,
+          reverse: false
         },
         tooltip: {
-          callbacks: {
-            label: ctx => `${ctx.label}: ${values[ctx.dataIndex]} respondents`
-          },
+          enabled: true,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
           titleFont: {
-            family: fontFamily,
-            size: 16
+            size: 22,
+            family: fontFamily
           },
           bodyFont: {
-            family: fontFamily,
-            size: 16
+            size: 22,
+            family: fontFamily
+          },
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return `${label}: ${value} respondents`;
+            }
           }
         }
       }
     }
   });
-
-  return chart;
+  return chartInstance;
 }
   
 export function getAgeCounts(data) {
@@ -204,4 +232,28 @@ export function getEthnicityCounts(data) {
   const labels = Object.values(valueMap);
   const values = labels.map(l => counts[l]);
   return { labels, values };
+}
+
+/* Plot donut and legend separately otherwise display is not as desired */ 
+export function renderDonutLegend(labels, colors) {
+  const legendDiv = document.getElementById('demoDonutLegend');
+  legendDiv.style.display = 'flex';
+  legendDiv.style.flexWrap = 'wrap';
+  legendDiv.style.justifyContent = 'center';
+  legendDiv.style.alignItems = 'center';
+  legendDiv.style.marginTop = '18px';
+  legendDiv.innerHTML = labels.map((label, i) => `
+    <span style="display:inline-flex;align-items:center;margin-right:18px;margin-bottom:8px;">
+      <span style="
+        display:inline-block;
+        width:18px;
+        height:18px;
+        background:${colors[i]};
+        border-radius:50%;
+        border:2px solid #fff;
+        margin-right:8px;
+      "></span>
+      <span style="font-family:Charter,serif;font-size:24px;color:#fff;">${label}</span>
+    </span>
+  `).join('');
 }
