@@ -102,7 +102,7 @@ html {
     justify-content: center;
     margin-top: 1em;
     padding: 1em;
-    background: rgba(0, 0, 0, 0.1);
+    background: #161528;
     border-radius: 8px;
   }
   .legend-item {
