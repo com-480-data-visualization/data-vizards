@@ -557,7 +557,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 5) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 1) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {
@@ -740,12 +740,235 @@ async function run_quiz(topic, containerId, globe) {
 
   globe.chart.showBestMatch({ name: codeISOMapping[countryISOMapping[closestCountry.country]], score: closestCountry.totalDistance });
   console.log(globe.panel.current_country)
+  // CAMILLE
+  /// INCLUDE HISTOGRAM HERE
+  const finalContainer = resetContainer(containerId);
+  // In your run_quiz function after resetting the finalContainer:
 
+  finalContainer.style.display = "flex";
+  finalContainer.style.height = "100vh";        // Full viewport height
+  finalContainer.style.justifyContent = "flex-end"; // Align children to right side horizontally
+  finalContainer.style.alignItems = "center";   // Vertically center children
+
+  // Buttons container (put on right side)
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.id = "buttons-container";
+  buttonsContainer.style.width = "200px";
+  buttonsContainer.style.marginRight = "20px";  // space from right edge
+  // (optional) buttonsContainer.style.position = "sticky"; // to keep in view when scrolling
+
+  finalContainer.appendChild(buttonsContainer);
+
+  // Histogram container fills remaining space
+  const histogramContainer = document.createElement("div");
+  histogramContainer.id = "histogram-container";
+  histogramContainer.style.flexGrow = "1";
+  histogramContainer.style.marginRig = "20px";  // space between buttons and histogram
+
+  finalContainer.appendChild(histogramContainer);
+
+  // Example datasets (replace or generate your own dynamically)
+  const datasets = {
+    Gender: [
+      {
+        attribute: "Male",
+        values: [
+          { range: '1-3', value: 5 },
+          { range: '4-6', value: 10 },
+          { range: '7-10', value: 15 }
+        ]
+      },
+      {
+        attribute: "Female",
+        values: [
+          { range: '1-3', value: 3 },
+          { range: '4-6', value: 6 },
+          { range: '7-10', value: 9 }
+        ]
+      }
+    ],
+    Age: [
+      {
+        attribute: "Group1",
+        values: [
+          { range: '1-3', value: 8 },
+          { range: '4-6', value: 12 },
+          { range: '7-10', value: 6 }
+        ]
+      },
+      {
+        attribute: "Group2",
+        values: [
+          { range: '1-3', value: 7 },
+          { range: '4-6', value: 5 },
+          { range: '7-10', value: 13 }
+        ]
+      }
+    ],
+    Religion: [
+      {
+        attribute: "A",
+        values: [
+          { range: '1-3', value: 20 },
+          { range: '4-6', value: 10 },
+          { range: '7-10', value: 5 }
+        ]
+      },
+      {
+        attribute: "B",
+        values: [
+          { range: '1-3', value: 10 },
+          { range: '4-6', value: 8 },
+          { range: '7-10', value: 12 }
+        ]
+      }
+    ]
+  };
+
+  // Create a button for each category
+  Object.keys(datasets).forEach(category => {
+  const btn = document.createElement("button");
+  btn.textContent = category;
+  btn.style.display = "block";
+  btn.style.marginBottom = "10px";
+  btn.style.width = "100%";
+  btn.style.padding = "10px 15px";
+  btn.style.fontSize = "16px";
+  btn.style.border = "none";
+  btn.style.borderRadius = "6px";
+  btn.style.backgroundColor = "#6c63ff";  // Nice purple-ish color
+  btn.style.color = "white";
+  btn.style.cursor = "pointer";
+  btn.style.transition = "background-color 0.3s ease, box-shadow 0.3s ease";
+
+  btn.onmouseover = () => {
+    btn.style.backgroundColor = "#574fd6";
+    btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  };
+  btn.onmouseout = () => {
+    btn.style.backgroundColor = "#6c63ff";
+    btn.style.boxShadow = "none";
+  };
+
+  btn.onclick = () => {
+    draw_histogram("histogram-container", datasets[category]);
+    // Optional: visually highlight the active button
+    document.querySelectorAll('#buttons-container button').forEach(b => b.style.opacity = "0.7");
+    btn.style.opacity = "1";
+  };
+
+  buttonsContainer.appendChild(btn);
+});
+
+
+  // Draw histogram initially with first dataset
+  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]]);
+
+  //draw_histogram(containerId, data_hist);
+  ///////////////
 }
 
 function compute_final_score(dist){
   return(((1 - dist) * 100).toFixed(2))
 }
+
+function draw_histogram(containerId, data) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ""; // Clear existing bars
+
+  const svg = d3.select(`#${containerId}`)
+    .append("svg")
+    .attr("width", 500)
+    .attr("height", 500);
+
+  const width = 500;
+  const height = 500;
+  const innerRadius = 0;
+  const outerRadius = 50;
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  const colorScale = d3.scaleOrdinal()
+    .domain(['1-3', '4-6', '7-10'])
+    .range(['#3a015c', '#86469c', '#caa6dd']);
+
+  const maxVal = d3.max(data.flatMap(d => d.values.map(v => v.value)));
+  const radius = d3.scaleLinear()
+    .domain([0, maxVal])
+    .range([innerRadius, outerRadius]);
+
+  const angle = d3.scaleBand()
+    .domain(data.map(d => d.attribute))
+    .range([0, 2*Math.PI]); // Half-circle
+
+  data.forEach(group => {
+    let startAngle = angle(group.attribute);
+    let endAngle = startAngle + angle.bandwidth();
+    let cumulative = 0;
+
+    group.values.forEach(d => {
+      let arc = d3.arc()
+        .innerRadius(radius(cumulative))
+        .outerRadius(radius(cumulative + d.value))
+        .startAngle(startAngle)
+        .endAngle(endAngle);
+
+      g.append("path")
+        .attr("d", arc)
+        .attr("fill", colorScale(d.range))
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5);
+
+      cumulative += d.value;
+    });
+  });
+
+  // Add gender labels
+  const labelOffset = (innerRadius + outerRadius) / 2 + 10; 
+  g.selectAll("text.gender-label")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "gender-label")
+    .attr("x", d => Math.cos(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
+    .attr("y", d => Math.sin(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "middle")
+    .text(d => d.attribute)
+    .style("font-size", "12px")
+    .style("fill", "white");
+
+  // Corresponding values to colors
+  const legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${width / 2 - 75}, ${height - 30})`); // Adjust position
+
+  const ranges = colorScale.domain();
+  ranges.forEach((range, i) => {
+    const legendItem = legend.append("g")
+      .attr("transform", `translate(${i * 80}, 0)`);
+
+    // Colored rectangle
+    legendItem.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("fill", colorScale(range));
+
+    // Label next to it
+    legendItem.append("text")
+      .attr("x", 20)
+      .attr("y", 12)
+      .text(range)
+      .style("fill", "#fff")
+      .style("font-size", "12px");
+  });
+}
+
+
+
+
+
 
 function fixMappingString(mapping) {
   // Convert keys enclosed in single quotes to double quotes.
