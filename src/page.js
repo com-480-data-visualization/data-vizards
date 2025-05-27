@@ -824,6 +824,7 @@ async function run_quiz(topic, containerId, globe) {
   const dropdownContainer = document.createElement("div");
   dropdownContainer.id = "dropdown-container";
   dropdownContainer.style.margin = "0";
+  dropdownContainer.style.marginBottom = "24px";
 
   const questionSelect = document.createElement("select");
   questionSelect.id = "question-select";
