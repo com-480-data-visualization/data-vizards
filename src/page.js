@@ -1,4 +1,3 @@
-
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
 		document.addEventListener("DOMContentLoaded", action);
@@ -414,7 +413,7 @@ const codeISOMapping = {
   'YT': 'Mayotte',
   'MX': 'Mexico',
   'FM': 'Micronesia (Federated States of)',
-  'MD': 'Moldova (the Republic of)',
+  'MDA': 'Moldova (the Republic of)',
   'MC': 'Monaco',
   'MN': 'Mongolia',
   'ME': 'Montenegro',
@@ -528,6 +527,63 @@ const allCountries = am5geodata_worldLow.features.map(f => ({
 
 const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75', 'Should global orgs prioritize effectiveness or democracy?': 'Q90'}
 
+// Hardcoded datasets for the histogram
+const datasets = {
+  Gender: [
+    {
+      attribute: "Male",
+      values: [
+        { range: '1-3', value: 5 },
+        { range: '4-6', value: 10 },
+        { range: '7-10', value: 15 }
+      ]
+    },
+    {
+      attribute: "Female",
+      values: [
+        { range: '1-3', value: 3 },
+        { range: '4-6', value: 6 },
+        { range: '7-10', value: 9 }
+      ]
+    }
+  ],
+  Age: [
+    {
+      attribute: "Group1",
+      values: [
+        { range: '1-3', value: 8 },
+        { range: '4-6', value: 12 },
+        { range: '7-10', value: 6 }
+      ]
+    },
+    {
+      attribute: "Group2",
+      values: [
+        { range: '1-3', value: 7 },
+        { range: '4-6', value: 5 },
+        { range: '7-10', value: 13 }
+      ]
+    }
+  ],
+  Religion: [
+    {
+      attribute: "A",
+      values: [
+        { range: '1-3', value: 20 },
+        { range: '4-6', value: 10 },
+        { range: '7-10', value: 5 }
+      ]
+    },
+    {
+      attribute: "B",
+      values: [
+        { range: '1-3', value: 10 },
+        { range: '4-6', value: 8 },
+        { range: '7-10', value: 12 }
+      ]
+    }
+  ]
+};
 
 /*
 
@@ -538,13 +594,34 @@ This section contains the code to compute the similarity associated to each coun
 async function loadData() {
   try {
     const data_clean = await d3.csv("data/subset_df_clean.csv", d3.autoType);
-	const data_answers = await d3.csv("data/handwritten_answers.csv", d3.autoType);
+    const data_answers = await d3.csv("data/handwritten_answers.csv", d3.autoType);
     console.log("Data loaded successfully:", data_answers.slice(0, 5)); // Log first 5 rows
-    return {data_clean,data_answers};
+    
+    // Transform the data into the format expected by the histogram
+    const surveyDatasets = {
+      "Global Survey": transformDataForHistogram(data_answers.filter(q => q.topic !== 'Demographics')),
+      "Social capital and trust survey": transformDataForHistogram(data_answers.filter(q => q.topic === 'Social capital and trust')),
+      "Ethical values and norms survey": transformDataForHistogram(data_answers.filter(q => q.topic === 'Ethical values and norms')),
+      "Social values and stereotypes survey": transformDataForHistogram(data_answers.filter(q => q.topic === 'Social values and stereotypes'))
+    };
+    
+    return { data_clean, data_answers, surveyDatasets };
   } catch (error) {
     console.error("Error loading the CSV file:", error);
     throw error;
   }
+}
+
+function transformDataForHistogram(questions) {
+  // Transform the questions data into the format expected by the histogram
+  return questions.map(q => ({
+    attribute: q.overall_question,
+    values: [
+      { range: '1-3', value: q.values_1_3 || 0 },
+      { range: '4-6', value: q.values_4_6 || 0 },
+      { range: '7-10', value: q.values_7_10 || 0 }
+    ]
+  }));
 }
 
 function sampleFromArray(arr, n) {
@@ -614,7 +691,7 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
 
 async function run_quiz(topic, containerId, globe) {
   // Load data and select questions
-  const { data_clean, data_answers } = await loadData();
+  const { data_clean, data_answers, surveyDatasets } = await loadData();
   const { selectedQuestions, validAnswers } = selectRandomQuestionsAndClean(data_answers, data_clean, topic);
 
   // Initialize dist_by_country for heatmap
@@ -730,123 +807,31 @@ async function run_quiz(topic, containerId, globe) {
   finalContainer.style.alignItems = "center";   // Vertically center children
 
   // Buttons container (put on right side)
-  const buttonsContainer = document.createElement("div");
-  buttonsContainer.id = "buttons-container";
-  buttonsContainer.style.width = "200px";
-  buttonsContainer.style.marginRight = "20px";
-  finalContainer.appendChild(buttonsContainer);
+  //const buttonsContainer = document.createElement("div");
+  //buttonsContainer.id = "buttons-container";
+  //buttonsContainer.style.width = "200px";
+  //buttonsContainer.style.marginRight = "20px";
+  //finalContainer.appendChild(buttonsContainer);
 
-  // Histogram container fills remaining space
-  const histogramContainer = document.createElement("div");
-  histogramContainer.id = "histogram-container";
-  histogramContainer.style.flexGrow = "1";
-  histogramContainer.style.marginRight = "20px";
-  finalContainer.appendChild(histogramContainer);
+  // Histogram module (parent for dropdown and histogram)
+  const histogramModule = document.createElement("div");
+  histogramModule.id = "histogram-module";
+  histogramModule.style.flexGrow = "1";
+  histogramModule.style.marginRight = "20px";
+  finalContainer.appendChild(histogramModule);
 
-  // Example datasets (replace or generate your own dynamically)
-  const datasets = {
-    Gender: [
-      {
-        attribute: "Male",
-        values: [
-          { range: '1-3', value: 5 },
-          { range: '4-6', value: 10 },
-          { range: '7-10', value: 15 }
-        ]
-      },
-      {
-        attribute: "Female",
-        values: [
-          { range: '1-3', value: 3 },
-          { range: '4-6', value: 6 },
-          { range: '7-10', value: 9 }
-        ]
-      }
-    ],
-    Age: [
-      {
-        attribute: "Group1",
-        values: [
-          { range: '1-3', value: 8 },
-          { range: '4-6', value: 12 },
-          { range: '7-10', value: 6 }
-        ]
-      },
-      {
-        attribute: "Group2",
-        values: [
-          { range: '1-3', value: 7 },
-          { range: '4-6', value: 5 },
-          { range: '7-10', value: 13 }
-        ]
-      }
-    ],
-    Religion: [
-      {
-        attribute: "A",
-        values: [
-          { range: '1-3', value: 20 },
-          { range: '4-6', value: 10 },
-          { range: '7-10', value: 5 }
-        ]
-      },
-      {
-        attribute: "B",
-        values: [
-          { range: '1-3', value: 10 },
-          { range: '4-6', value: 8 },
-          { range: '7-10', value: 12 }
-        ]
-      }
-    ]
-  };
-
-  // Create a button for each category
-  Object.keys(datasets).forEach(category => {
-    const btn = document.createElement("button");
-    btn.textContent = category;
-    btn.style.display = "block";
-    btn.style.marginBottom = "10px";
-    btn.style.width = "100%";
-    btn.style.padding = "10px 15px";
-    btn.style.fontSize = "16px";
-    btn.style.border = "none";
-    btn.style.borderRadius = "6px";
-    btn.style.backgroundColor = "#6c63ff";
-    btn.style.color = "white";
-    btn.style.cursor = "pointer";
-    btn.style.transition = "background-color 0.3s ease, box-shadow 0.3s ease";
-
-    btn.onmouseover = () => {
-      btn.style.backgroundColor = "#574fd6";
-      btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-    };
-    btn.onmouseout = () => {
-      btn.style.backgroundColor = "#6c63ff";
-      btn.style.boxShadow = "none";
-    };
-
-    btn.onclick = () => {
-      draw_histogram("histogram-container", datasets[category]);
-      document.querySelectorAll('#buttons-container button').forEach(b => b.style.opacity = "0.7");
-      btn.style.opacity = "1";
-    };
-
-    buttonsContainer.appendChild(btn);
-  });
-
-  // Create and insert a dropdown above the histogram
+  // Dropdown for questions (Exploration_questions)
   const dropdownContainer = document.createElement("div");
   dropdownContainer.id = "dropdown-container";
-  dropdownContainer.style.marginBottom = "20px";
+  dropdownContainer.style.margin = "0";
 
   const questionSelect = document.createElement("select");
   questionSelect.id = "question-select";
   questionSelect.style.padding = "10px";
   questionSelect.style.fontSize = "16px";
+  questionSelect.style.marginRight = "0";
 
-  // Populate dropdown from available datasets
-  Object.keys(datasets).forEach(key => {
+  Object.keys(Exploration_questions).forEach((key) => {
     const option = document.createElement("option");
     option.value = key;
     option.text = key;
@@ -854,16 +839,56 @@ async function run_quiz(topic, containerId, globe) {
   });
 
   dropdownContainer.appendChild(questionSelect);
-  histogramContainer.appendChild(dropdownContainer);
+  histogramModule.appendChild(dropdownContainer);   // Dropdown on top
 
-  // Dropdown event listener
-  questionSelect.addEventListener("change", () => {
-    const selected = questionSelect.value;
-    draw_histogram("histogram-container", datasets[selected]);
+  // Buttons for datasets (Gender, Age, Religion)
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.id = "buttons-container";
+  buttonsContainer.style.display = "flex";
+  buttonsContainer.style.flexDirection = "row";
+  buttonsContainer.style.gap = "12px";
+  buttonsContainer.style.marginBottom = "24px";
+  histogramModule.appendChild(buttonsContainer);
+
+  const datasetKeys = Object.keys(datasets);
+  let selectedDataset = datasetKeys[0]; // Default
+
+  datasetKeys.forEach((key) => {
+    const btn = document.createElement("button");
+    btn.textContent = key;
+    btn.style.margin = "0";
+    btn.style.padding = "10px 15px";
+    btn.style.fontSize = "16px";
+    btn.style.border = "none";
+    btn.style.borderRadius = "6px";
+    btn.style.backgroundColor = "#6c63ff";
+    btn.style.color = "white";
+    btn.style.cursor = "pointer";
+    btn.style.opacity = key === selectedDataset ? "1" : "0.7";
+    btn.onclick = () => {
+      selectedDataset = key;
+      Array.from(buttonsContainer.children).forEach(b => b.style.opacity = "0.7");
+      btn.style.opacity = "1";
+      updateHistogram();
+    };
+    buttonsContainer.appendChild(btn);
   });
 
-  // Draw initial histogram
-  questionSelect.dispatchEvent(new Event("change"));
+  // Histogram container (only the SVG will be cleared)
+  const histogramContainer = document.createElement("div");
+  histogramContainer.id = "histogram-container";
+  histogramModule.appendChild(histogramContainer);
+
+  // Update histogram when dropdown or button changes
+  function updateHistogram() {
+    draw_histogram("histogram-container", datasets[selectedDataset]);
+  }
+
+  // Dropdown event
+  questionSelect.addEventListener("change", updateHistogram);
+
+  // Initial draw
+  updateHistogram();
 }
 
 
@@ -1141,14 +1166,14 @@ function create_interactive_globe(container_id){
     
     const panelLabel = panel.children.push(
       am5.Label.new(root, {
-        text: "",               // we’ll fill this in later
+        text: "",               // we'll fill this in later
         fontSize: 14,
         fill: am5.color(0x000000),
 
         // **NEW PROPS** to center it perfectly:
         width: am5.percent(100),    // span full width of panel
         textAlign: "center",        // center the text inside that width
-        x: am5.percent(50),         // position the label’s left x at 50%
+        x: am5.percent(50),         // position the label's left x at 50%
         centerX: am5.percent(50)    // align its center to that x
           })
     );
@@ -1379,69 +1404,59 @@ function create_section_selector(container_id,globe){
 }
 
 function create_introduction(container_id,globe){
-	//setup title
-	d3.select("#"+container_id)
-	.insert("div", ":first-child")
-	.attr("id", "module-title")
-	.style("width", "100%")             
-	.style("text-align", "center")      
-	.style("padding-top", "20px")      
-	.style("color", "white")          
-	.style("font-size", "24px")        
-	.text("Introduction");
-
-	//
-	const width = 900, height = 500;
 	const svg = d3.select("#"+container_id)
 	  .append("svg")
-	  .attr("width", width)
-	  .attr("height", height);
+	  .attr("width", 500)
+	  .attr("height", 500);
 
-  const introText = "Hello!  Welcome in the Data-Vizards lair! \n\
-                      Have you ever wondered whether you’d get along with people if you \n\
-                      moved abroad? We have—and that’s exactly where this project began. \n\
-                      Our aim was to quantify how well someone might fit in when they \n\
-                      relocate to another country. \n\
-                      So we rolled up our sleeves and dove into the World Values Survey, \n\
-                      mining questions about trust, tolerance, and friendship to calculate a \n\
-                      “cultural compatibility” score for every nation on the map. \n\
-                      But we didn’t stop at a single number. We wanted you to explore how \n\
-                      different groups see the world, too—a woman moving abroad might \n\
-                      care most about what other women think, just as age, religion, \n\
-                      economic class, and more can shape your experience. \n\
-                      That’s why we give you the option to choose from multiple survey \n\
-                      filters, view an interactive map of your best-match countries, and then \n\
-                      drill down into the detailed responses of each country and \n\
-                      demographic group."
-  const formatedText = introText.split("\n");
+	const introText = [
+	  "Hello!  Welcome in the Data-Vizards lair!",
+	  "Have you ever wondered whether you'd get along with people if you",
+	  "moved abroad? We have—and that's exactly where this project began.",
+	  "Our aim was to quantify how well someone might fit in when they",
+	  "relocate to another country.",
+	  "So we rolled up our sleeves and dove into the World Values Survey,",
+	  "mining questions about trust, tolerance, and friendship to calculate a",
+	  '"cultural compatibility" score for every nation on the map.',
+	  "But we didn't stop at a single number. We wanted you to explore how",
+	  "different groups see the world, too—a woman moving abroad might",
+	  "care most about what other women think, just as age, religion,",
+	  "economic class, and more can shape your experience.",
+	  "That's why we give you the option to choose from multiple survey",
+	  "filters, view an interactive map of your best-match countries, and then",
+	  "drill down into the detailed responses of each country and",
+	  "demographic group."
+	].join("\n");
+
+	const formatedText = introText.split("\n");
 
 	const text = svg.append("text")
-      .attr("x", 20)
-      .attr("y", 20)
-      .attr("class", "intro_text")
-      .attr('fill','white')
-      .attr('text-align','center')
+	  .attr("x", 20)
+	  .attr("y", 20)
+	  .attr("class", "intro_text")
+	  .attr('fill','white')
+	  .attr('text-align','center')
 
-  text.selectAll("tspan")
-      .data(formatedText)
-      .enter().append("tspan")
-      .attr("x", text.attr("x"))           // reset x each line
-      .attr("dy", (d,i) => i === 0 ? 0 : "1.2em")  // first line at y, others shifted
-      .text(d => d);
+	text.selectAll("tspan")
+	  .data(formatedText)
+	  .enter().append("tspan")
+	  .attr("x", text.attr("x"))           // reset x each line
+	  .attr("dy", (d,i) => i === 0 ? 0 : "1.2em")  // first line at y, others shifted
+	  .text(d => d);
 
 	const btnGroup = svg.append("g")
-      .attr("transform", "translate(400,400)")
-      .style("cursor", "pointer")
-      .on("click", () => console.log("SVG button clicked!"));
+	  .attr("transform", "translate(400,400)")
+	  .style("cursor", "pointer")
+	  .on("click", () => console.log("SVG button clicked!"));
 	
 	btnGroup.append("rect")
-      .attr("class", "btn-rect")
-      .attr("width", 100)
-      .attr("height", 40)
+	  .attr("class", "btn-rect")
+	  .attr("width", 100)
+	  .attr("height", 40)
 	  .attr('fill', 'grey')
-      .attr("rx", 5)    // rounded corners
-      .on("mouseover", function() { d3.select(this).attr("fill", "white"); })
-      .on("mouseout",  function() { d3.select(this).attr("fill", "grey"); })
+	  .attr("rx", 5)    // rounded corners
+	  .on("mouseover", function() { d3.select(this).attr("fill", "white"); })
+	  .on("mouseout",  function() { d3.select(this).attr("fill", "grey"); })
 	  .on("click", (event, d) => {
 		const oldDiv = document.getElementById(container_id);
 		const parent = oldDiv.parentNode;
@@ -1454,12 +1469,12 @@ function create_introduction(container_id,globe){
 	});
 
 	btnGroup.append("text")
-      .attr("class", "btn-txt")
-      .attr("x", 50)    // half of 100
-      .attr("y", 25)    // a bit more than half of 40
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .text("Start");
+	  .attr("class", "btn-txt")
+	  .attr("x", 50)    // half of 100
+	  .attr("y", 25)    // a bit more than half of 40
+	  .attr("text-anchor", "middle")
+	  .attr("dominant-baseline", "middle")
+	  .text("Start");
 
 }
 
@@ -1467,7 +1482,7 @@ function create_introduction(container_id,globe){
 
 whenDocumentLoaded(async () => {
 	// Load the data
-	const surveyData = await loadData();
+	const { data_clean, data_answers, surveyDatasets } = await loadData();
 	// create header
 	const header = d3.select("body")
     .insert("div", ":first-child")
