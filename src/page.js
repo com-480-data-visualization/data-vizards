@@ -526,6 +526,9 @@ const allCountries = am5geodata_worldLow.features.map(f => ({
   value:   0           
 }));
 
+const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75', 'Should global orgs prioritize effectiveness or democracy?': 'Q90'}
+
+
 /*
 
 This section contains the code to compute the similarity associated to each country w.r.t. responses.
@@ -634,102 +637,73 @@ async function run_quiz(topic, containerId, globe) {
 
   // Function to show a single question and wait for a bar click.
   async function showQuestion(question) {
-      const container = resetContainer(containerId);
+    const container = resetContainer(containerId);
 
-      // Create a dedicated interactive bar container inside our main container.
-      const barContainer = document.createElement("div");
-      barContainer.id = "interactivebar";
-      barContainer.classList.add("module");
-      container.appendChild(barContainer);
+    // Create a dedicated interactive bar container inside our main container.
+    const barContainer = document.createElement("div");
+    barContainer.id = "interactivebar";
+    barContainer.classList.add("module");
+    container.appendChild(barContainer);
 
-      // Return a promise that resolves when a bar is clicked.
-      return new Promise(resolve => {
-        create_interactive_bar(
-          globe,
-          question.overall_question,
-          question.specific_question,
-          question.possible_answers,
-          selectedKey => {
-            resolve(selectedKey);
-          }
-        );
-      });
-    }
-  // Initialize distances see what kind of object
-  // Where each individual is at dist 0
-  // Loop through questions one at a time.
+    // Return a promise that resolves when a bar is clicked.
+    return new Promise(resolve => {
+      create_interactive_bar(
+        globe,
+        question.overall_question,
+        question.specific_question,
+        question.possible_answers,
+        selectedKey => {
+          resolve(selectedKey);
+        }
+      );
+    });
+  }
+
+  // Initialize distances
   let question_nbr = 1;
   for (const question of selectedQuestions) {
     console.log("Processing question:", question);
     const selectedKey = await showQuestion(question);
     console.log("User selected:", selectedKey);
-    console.log("With corresponds to answer:", selectedKey[1]);
-    console.log(validAnswers[0].distance);
     const answer = selectedKey[1];
     const question_idx = question.index;
 
-    // Compute distance with other users
-    /*
-    validAnswers.forEach(user => {
-    const userAnswer = parseInt(user[question_idx], 10);
-    const country = user.B_COUNTRY_ALPHA;
+    const questionScores = Object.values(validAnswers).reduce((byC, user) => {
+      const userAnswer = parseInt(user[question_idx], 10);
+      const diff = Math.abs(userAnswer - answer) / Object.keys(question.possible_answers).length;
+      user.distance += diff;
+      const country = user.B_COUNTRY_ALPHA;
+      const norm = user.distance / question_nbr;
+      const entry = byC[country] ||= { total: 0, count: 0 };
+      entry.total += norm;
+      entry.count += 1;
+      return byC;
+    }, {});
 
-    if (!user.hasOwnProperty("distance")) {
-      user.distance = 0;
+    for (let c in questionScores) {
+      distanceByCountry[c] = questionScores[c];
+      distanceByCountry[c].totalDistance = distanceByCountry[c].total / distanceByCountry[c].count;
     }
 
-    const diff = Math.abs(userAnswer - answer) / Object.keys(question.possible_answers).length;
-    user.distance += diff;
-    const normalized_dist = user.distance / question_nbr;
+    console.log("dist_by_country", distanceByCountry);
 
-    if (!distanceByCountry[country]) {
-      distanceByCountry[country] = { totalDistance: 0, count: 0 };
+    // Derive the per-country heatmap score
+    const [minScore, maxScore] = ((v) => [Math.min(...v), Math.max(...v)])(
+      Object.values(distanceByCountry).map(o => o.totalDistance)
+    );
+
+    let heatmapScore = {};
+    for (let [countryCode, countryValues] of Object.entries(distanceByCountry)) {
+      heatmapScore[countryISOMapping[countryCode]] = 1 - (countryValues.totalDistance - minScore) / (maxScore - minScore);
     }
 
-    const previousAvgDistance = distanceByCountry[country].totalDistance;
-    const numPreviousUsers = distanceByCountry[country].count;
-    const currentUserDistance = normalized_dist;
+    console.log("formatedValues", heatmapScore);
+    update_countries(globe.polygonSeries, heatmapScore);
 
-    distanceByCountry[country].totalDistance = (previousAvgDistance * numPreviousUsers + currentUserDistance) / (numPreviousUsers + 1);
-    distanceByCountry[country].count += 1;
-  });
-
-
-  */
-  
-  const questionScores = Object.values(validAnswers).reduce((byC, user) => {
-    const userAnswer = parseInt(user[question_idx], 10);
-    const diff = Math.abs(userAnswer - answer) / Object.keys(question.possible_answers).length;
-    user.distance += diff;
-    const country = user.B_COUNTRY_ALPHA;
-    const norm = user.distance / question_nbr;      // partial distance
-    const entry = byC[country] ||= { total:0, count:0 };
-    entry.total   += norm;
-    entry.count   += 1;
-    return byC;
-  }, {});
-  for (let c in questionScores) {
-    distanceByCountry[c] = questionScores[c];
-    distanceByCountry[c].totalDistance = distanceByCountry[c].total/distanceByCountry[c].count
+    question_nbr += 1;
   }
-  console.log("dist_by_country", distanceByCountry);
 
-  // Derive the per-country heatmap score
-  let heatmapScore = Object()
-  const [minScore, maxScore] = ((v) => [Math.min(...v), Math.max(...v)])(
-    Object.values(distanceByCountry).map(o => o.totalDistance)
-  );
-  for (let [countryCode,countryValues] of Object.entries(distanceByCountry)){
-    heatmapScore[countryISOMapping[countryCode]] = 1-(countryValues.totalDistance-minScore)/(maxScore-minScore);
-  } 
-  console.log("formatedValues", heatmapScore);
-  update_countries(globe.polygonSeries,heatmapScore)
-
-  // Increment question count after processing all users for this question
-  question_nbr += 1;
-
-  }
-  // Find the country with the smallest totalDistance
+  // Find best match
   const closestCountry = Object.entries(distanceByCountry).reduce((closest, [country, data]) => {
     return data.totalDistance < closest.totalDistance ? { country, totalDistance: data.totalDistance } : closest;
   }, { country: null, totalDistance: Infinity });
@@ -738,13 +712,18 @@ async function run_quiz(topic, containerId, globe) {
   console.log("with a final score of:", compute_final_score(closestCountry.totalDistance), "%")
   console.log("Quiz complete!");
 
-  globe.chart.showBestMatch({ name: codeISOMapping[countryISOMapping[closestCountry.country]], score: closestCountry.totalDistance });
+  globe.chart.showBestMatch({
+    name: codeISOMapping[countryISOMapping[closestCountry.country]],
+    score: closestCountry.totalDistance
+  });
+
   console.log(globe.panel.current_country)
+
   // CAMILLE
   /// INCLUDE HISTOGRAM HERE
   const finalContainer = resetContainer(containerId);
-  // In your run_quiz function after resetting the finalContainer:
 
+  // In your run_quiz function after resetting the finalContainer:
   finalContainer.style.display = "flex";
   finalContainer.style.height = "100vh";        // Full viewport height
   finalContainer.style.justifyContent = "flex-end"; // Align children to right side horizontally
@@ -754,17 +733,14 @@ async function run_quiz(topic, containerId, globe) {
   const buttonsContainer = document.createElement("div");
   buttonsContainer.id = "buttons-container";
   buttonsContainer.style.width = "200px";
-  buttonsContainer.style.marginRight = "20px";  // space from right edge
-  // (optional) buttonsContainer.style.position = "sticky"; // to keep in view when scrolling
-
+  buttonsContainer.style.marginRight = "20px";
   finalContainer.appendChild(buttonsContainer);
 
   // Histogram container fills remaining space
   const histogramContainer = document.createElement("div");
   histogramContainer.id = "histogram-container";
   histogramContainer.style.flexGrow = "1";
-  histogramContainer.style.marginRig = "20px";  // space between buttons and histogram
-
+  histogramContainer.style.marginRight = "20px";
   finalContainer.appendChild(histogramContainer);
 
   // Example datasets (replace or generate your own dynamically)
@@ -827,46 +803,69 @@ async function run_quiz(topic, containerId, globe) {
 
   // Create a button for each category
   Object.keys(datasets).forEach(category => {
-  const btn = document.createElement("button");
-  btn.textContent = category;
-  btn.style.display = "block";
-  btn.style.marginBottom = "10px";
-  btn.style.width = "100%";
-  btn.style.padding = "10px 15px";
-  btn.style.fontSize = "16px";
-  btn.style.border = "none";
-  btn.style.borderRadius = "6px";
-  btn.style.backgroundColor = "#6c63ff";  // Nice purple-ish color
-  btn.style.color = "white";
-  btn.style.cursor = "pointer";
-  btn.style.transition = "background-color 0.3s ease, box-shadow 0.3s ease";
-
-  btn.onmouseover = () => {
-    btn.style.backgroundColor = "#574fd6";
-    btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-  };
-  btn.onmouseout = () => {
+    const btn = document.createElement("button");
+    btn.textContent = category;
+    btn.style.display = "block";
+    btn.style.marginBottom = "10px";
+    btn.style.width = "100%";
+    btn.style.padding = "10px 15px";
+    btn.style.fontSize = "16px";
+    btn.style.border = "none";
+    btn.style.borderRadius = "6px";
     btn.style.backgroundColor = "#6c63ff";
-    btn.style.boxShadow = "none";
-  };
+    btn.style.color = "white";
+    btn.style.cursor = "pointer";
+    btn.style.transition = "background-color 0.3s ease, box-shadow 0.3s ease";
 
-  btn.onclick = () => {
-    draw_histogram("histogram-container", datasets[category]);
-    // Optional: visually highlight the active button
-    document.querySelectorAll('#buttons-container button').forEach(b => b.style.opacity = "0.7");
-    btn.style.opacity = "1";
-  };
+    btn.onmouseover = () => {
+      btn.style.backgroundColor = "#574fd6";
+      btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+    };
+    btn.onmouseout = () => {
+      btn.style.backgroundColor = "#6c63ff";
+      btn.style.boxShadow = "none";
+    };
 
-  buttonsContainer.appendChild(btn);
-});
+    btn.onclick = () => {
+      draw_histogram("histogram-container", datasets[category]);
+      document.querySelectorAll('#buttons-container button').forEach(b => b.style.opacity = "0.7");
+      btn.style.opacity = "1";
+    };
 
+    buttonsContainer.appendChild(btn);
+  });
 
-  // Draw histogram initially with first dataset
-  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]]);
+  // Create and insert a dropdown above the histogram
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.id = "dropdown-container";
+  dropdownContainer.style.marginBottom = "20px";
 
-  //draw_histogram(containerId, data_hist);
-  ///////////////
+  const questionSelect = document.createElement("select");
+  questionSelect.id = "question-select";
+  questionSelect.style.padding = "10px";
+  questionSelect.style.fontSize = "16px";
+
+  // Populate dropdown from available datasets
+  Object.keys(datasets).forEach(key => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.text = key;
+    questionSelect.appendChild(option);
+  });
+
+  dropdownContainer.appendChild(questionSelect);
+  histogramContainer.appendChild(dropdownContainer);
+
+  // Dropdown event listener
+  questionSelect.addEventListener("change", () => {
+    const selected = questionSelect.value;
+    draw_histogram("histogram-container", datasets[selected]);
+  });
+
+  // Draw initial histogram
+  questionSelect.dispatchEvent(new Event("change"));
 }
+
 
 function compute_final_score(dist){
   return(((1 - dist) * 100).toFixed(2))
@@ -900,7 +899,7 @@ function draw_histogram(containerId, data) {
 
   const angle = d3.scaleBand()
     .domain(data.map(d => d.attribute))
-    .range([0, 2*Math.PI]); // Half-circle
+    .range([0, 2*Math.PI]); // Full-circle
 
   data.forEach(group => {
     let startAngle = angle(group.attribute);
