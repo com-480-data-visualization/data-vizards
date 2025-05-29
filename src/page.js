@@ -695,6 +695,160 @@ function make_histograms(selectedQuestions, data_clean, data_answers) {
   draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
 }
 
+function build_histograms(containerId, selected_country, data_clean, data_answers) {
+  // Create histogram module directly in the container
+  const histogramModule = document.createElement("div");
+  histogramModule.id = "histogram-module";
+  histogramModule.style.flexGrow = "1";
+  histogramModule.style.marginRight = "20px";
+  document.getElementById(containerId).appendChild(histogramModule);
+
+  // Dropdown for questions (Exploration_questions)
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.id = "dropdown-container";
+  dropdownContainer.style.margin = "0";
+  dropdownContainer.style.marginBottom = "24px";
+
+  const questionSelect = document.createElement("select");
+  questionSelect.id = "question-select";
+  questionSelect.style.padding = "10px";
+  questionSelect.style.fontSize = "16px";
+  questionSelect.style.marginRight = "0";
+
+  Object.keys(Exploration_questions).forEach((key) => {
+    const option = document.createElement("option");
+    option.value = Exploration_questions[key];  // Use the question code as value
+    option.text = key;
+    questionSelect.appendChild(option);
+  });
+
+  dropdownContainer.appendChild(questionSelect);
+  histogramModule.appendChild(dropdownContainer);   // Dropdown on top
+
+  // Buttons for datasets (Gender, Age, Religion)
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.id = "buttons-container";
+  buttonsContainer.style.display = "flex";
+  buttonsContainer.style.flexDirection = "row";
+  buttonsContainer.style.gap = "12px";
+  buttonsContainer.style.marginBottom = "24px";
+  histogramModule.appendChild(buttonsContainer);
+
+  // Initialize datasets object
+  const datasets = {
+    Gender: [],
+    Age: [],
+    Religion: []
+  };
+
+  // Get the selected question
+  const selected_question = questionSelect.value;
+
+  // Find the possible answers string for the selected question
+  const questionData = data_answers.find(row => row.index === selected_question);
+  console.log("question data", questionData);
+  let possibleAnswersMapping = {};
+  if (questionData && questionData.possible_answers) {
+    // Parse and invert the possible_answers string
+    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+    for (const text in rawMapping) {
+      possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+    }
+  }
+
+  console.log("Debug - Computing datasets with:");
+  console.log("- Country:", selected_country);
+  console.log("- Question:", selected_question);
+  console.log("- Possible Answers Mapping:", possibleAnswersMapping);
+  console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
+
+  // Dynamically build datasets after a country/question is chosen
+  datasets.Gender = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q260', genderMap);
+  console.log("Debug - Gender dataset:", datasets.Gender);
+
+  datasets.Age = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q287', ageMap);
+  console.log("Debug - Age dataset:", datasets.Age);
+
+  datasets.Religion = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q289', religionMap);
+  console.log("Debug - Religion dataset:", datasets.Religion);
+
+  const datasetKeys = Object.keys(datasets);
+  let selectedDataset = datasetKeys[0]; // Default
+
+  datasetKeys.forEach((key) => {
+    const btn = document.createElement("button");
+    btn.textContent = key;
+    btn.style.margin = "0";
+    btn.style.padding = "10px 15px";
+    btn.style.fontSize = "16px";
+    btn.style.border = "none";
+    btn.style.borderRadius = "6px";
+    btn.style.backgroundColor = "#6c63ff";
+    btn.style.color = "white";
+    btn.style.cursor = "pointer";
+    btn.style.opacity = key === selectedDataset ? "1" : "0.7";
+    btn.onclick = () => {
+      selectedDataset = key;
+      Array.from(buttonsContainer.children).forEach(b => b.style.opacity = "0.7");
+      btn.style.opacity = "1";
+      updateHistogram();
+    };
+    buttonsContainer.appendChild(btn);
+  });
+
+  // Histogram container (only the SVG will be cleared)
+  const histogramContainer = document.createElement("div");
+  histogramContainer.id = "histogram-container";
+  histogramModule.appendChild(histogramContainer);
+
+  // Update histogram when dropdown or button changes
+  function updateHistogram() {
+    console.log("Debug - Drawing histogram for dataset:", selectedDataset);
+    console.log("Debug - Dataset content:", datasets[selectedDataset]);
+    draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
+  }
+
+  // Dropdown event
+  questionSelect.addEventListener("change", () => {
+    const newQuestion = questionSelect.value;
+    console.log("Debug - Question changed to:", newQuestion);
+
+    // Find the possible answers mapping for the new question
+    const questionData = data_answers.find(row => row.index === newQuestion);
+    possibleAnswersMapping = {};
+    
+    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+    for (const text in rawMapping) {
+        possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+    }
+    
+    console.log("Debug - New Possible Answers Mapping:", possibleAnswersMapping);
+
+    datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
+    datasets.Age = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q287', ageMap);
+    datasets.Religion = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q289', religionMap);
+    console.log("homemade question mapping", questionData)
+    // Pass the updated possibleAnswersMapping to updateHistogram
+    console.log("📊 About to draw histogram with mapping:");
+    console.log(possibleAnswersMapping);
+
+    updateHistogram(); // updateHistogram will now use the latest selected_question and generate the mapping internally
+  });
+
+  // Initial draw
+  console.log("Debug - Performing initial histogram draw");
+  // Find the initial possible answers mapping
+  const initialQuestionData = data_answers.find(row => row.index === questionSelect.value);
+  let initialPossibleAnswersMapping = {};
+  if (initialQuestionData && initialQuestionData.possible_answers) {
+    const rawMapping = JSON.parse(fixMappingString(initialQuestionData.possible_answers));
+    for (const text in rawMapping) {
+      initialPossibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+    }
+  }
+  // Pass the initial possibleAnswersMapping to draw_histogram
+  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]], initialPossibleAnswersMapping);
+}
 
 async function run_quiz(topic, containerId, globe) {
   // Load data and select questions
@@ -703,10 +857,6 @@ async function run_quiz(topic, containerId, globe) {
 
   // Initialize dist_by_country for heatmap
   const distanceByCountry = {};
-
-  // Initialize label mapping for histogram
-  let possibleAnswersMapping = {};
-
 
   console.log("Selected questions:", selectedQuestions);
 
@@ -812,160 +962,8 @@ async function run_quiz(topic, containerId, globe) {
   console.log("Debug - Selected Country:", closestCountry.country);
   console.log("Debug - First few rows of data_clean:", data_clean.slice(0, 3));
 
-  // Create histogram module directly in the original container
-  const histogramModule = document.createElement("div");
-  histogramModule.id = "histogram-module";
-  histogramModule.style.flexGrow = "1";
-  histogramModule.style.marginRight = "20px";
-  originalContainer.appendChild(histogramModule);
-
-  // Dropdown for questions (Exploration_questions)
-  const dropdownContainer = document.createElement("div");
-  dropdownContainer.id = "dropdown-container";
-  dropdownContainer.style.margin = "0";
-  dropdownContainer.style.marginBottom = "24px";
-
-  const questionSelect = document.createElement("select");
-  questionSelect.id = "question-select";
-  questionSelect.style.padding = "10px";
-  questionSelect.style.fontSize = "16px";
-  questionSelect.style.marginRight = "0";
-
-  Object.keys(Exploration_questions).forEach((key) => {
-    const option = document.createElement("option");
-    option.value = Exploration_questions[key];  // Use the question code as value
-    option.text = key;
-    questionSelect.appendChild(option);
-  });
-
-  dropdownContainer.appendChild(questionSelect);
-  histogramModule.appendChild(dropdownContainer);   // Dropdown on top
-
-  // Buttons for datasets (Gender, Age, Religion)
-  const buttonsContainer = document.createElement("div");
-  buttonsContainer.id = "buttons-container";
-  buttonsContainer.style.display = "flex";
-  buttonsContainer.style.flexDirection = "row";
-  buttonsContainer.style.gap = "12px";
-  buttonsContainer.style.marginBottom = "24px";
-  histogramModule.appendChild(buttonsContainer);
-
-  // Initialize datasets object
-  const datasets = {
-    Gender: [],
-    Age: [],
-    Religion: []
-  };
-
-  // Get the selected country and question
-  const selected_country = closestCountry.country;  // This is already in the correct format (3-letter code)
-  const selected_question = questionSelect.value;
-
-  // Find the possible answers string for the selected question
-  const questionData = data_answers.find(row => row.index === selected_question);
-  console.log("question data", questionData);
-  possibleAnswersMapping = {};
-  if (questionData && questionData.possible_answers) {
-    // Parse and invert the possible_answers string
-    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
-    for (const text in rawMapping) {
-      possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
-    }
-  }
-
-  console.log("Debug - Computing datasets with:");
-  console.log("- Country:", selected_country);
-  console.log("- Question:", selected_question);
-  console.log("- Possible Answers Mapping:", possibleAnswersMapping);
-  console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
-
-  // Dynamically build datasets after a country/question is chosen
-  datasets.Gender = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q260', genderMap);
-  console.log("Debug - Gender dataset:", datasets.Gender);
-
-  datasets.Age = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q287', ageMap);
-  console.log("Debug - Age dataset:", datasets.Age);
-
-  datasets.Religion = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q289', religionMap);
-  console.log("Debug - Religion dataset:", datasets.Religion);
-
-  const datasetKeys = Object.keys(datasets);
-  let selectedDataset = datasetKeys[0]; // Default
-
-  datasetKeys.forEach((key) => {
-    const btn = document.createElement("button");
-    btn.textContent = key;
-    btn.style.margin = "0";
-    btn.style.padding = "10px 15px";
-    btn.style.fontSize = "16px";
-    btn.style.border = "none";
-    btn.style.borderRadius = "6px";
-    btn.style.backgroundColor = "#6c63ff";
-    btn.style.color = "white";
-    btn.style.cursor = "pointer";
-    btn.style.opacity = key === selectedDataset ? "1" : "0.7";
-    btn.onclick = () => {
-      selectedDataset = key;
-      Array.from(buttonsContainer.children).forEach(b => b.style.opacity = "0.7");
-      btn.style.opacity = "1";
-      updateHistogram();
-    };
-    buttonsContainer.appendChild(btn);
-  });
-
-  // Histogram container (only the SVG will be cleared)
-  const histogramContainer = document.createElement("div");
-  histogramContainer.id = "histogram-container";
-  histogramModule.appendChild(histogramContainer);
-
-  // Update histogram when dropdown or button changes
-  function updateHistogram() {
-    console.log("Debug - Drawing histogram for dataset:", selectedDataset);
-    console.log("Debug - Dataset content:", datasets[selectedDataset]);
-    draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
-  }
-
-  // Dropdown event
-  questionSelect.addEventListener("change", () => {
-
-    const newQuestion = questionSelect.value;
-    console.log("Debug - Question changed to:", newQuestion);
-
-    // Find the possible answers mapping for the new question
-    const questionData = data_answers.find(row => row.index === newQuestion);
-    possibleAnswersMapping = {};
-    
-    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
-    for (const text in rawMapping) {
-        possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
-    }
-    
-    console.log("Debug - New Possible Answers Mapping:", possibleAnswersMapping);
-
-    datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
-    datasets.Age = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q287', ageMap);
-    datasets.Religion = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q289', religionMap);
-    console.log("homemade question mapping", questionData)
-    // Pass the updated possibleAnswersMapping to updateHistogram
-    console.log("📊 About to draw histogram with mapping:");
-    console.log(possibleAnswersMapping);
-
-    updateHistogram(); // updateHistogram will now use the latest selected_question and generate the mapping internally
-  });
-
-  // Initial draw
-  console.log("Debug - Performing initial histogram draw");
-  // Find the initial possible answers mapping
-  const initialQuestionData = data_answers.find(row => row.index === questionSelect.value);
-    let initialPossibleAnswersMapping = {};
-    if (initialQuestionData && initialQuestionData.possible_answers) {
-        const rawMapping = JSON.parse(fixMappingString(initialQuestionData.possible_answers));
-        for (const text in rawMapping) {
-            initialPossibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
-        }
-    }
-  // Pass the initial possibleAnswersMapping to draw_histogram
-  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]], initialPossibleAnswersMapping);
+  // Build histograms with the selected country
+  build_histograms(containerId, closestCountry.country, data_clean, data_answers);
 }
 
 function compute_final_score(dist){
