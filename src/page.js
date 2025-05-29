@@ -535,7 +535,7 @@ const allCountries = am5geodata_worldLow.features.map(f => ({
   value:   0           
 }));
 
-const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75', 'Should global orgs prioritize effectiveness or democracy?': 'Q90'}
+const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75','Should global orgs prioritize effectiveness or democracy?': 'Q90'}
 
 // Mapping objects for histogram data
 const genderMap = { 1: "Male", 2: "Female" };
@@ -564,7 +564,7 @@ async function loadData() {
   try {
     const data_clean = await d3.csv("data/subset_df_clean.csv", d3.autoType);
     const data_answers = await d3.csv("data/handwritten_answers.csv", d3.autoType);
-    console.log("Data loaded successfully:", data_answers.slice(0, 5)); // Log first 5 rows
+    console.log("Data loaded successfully:", data_answers.slice(4, 8)); // Log first 5 rows
     
     // Transform the data into the format expected by the histogram
     surveyDatasets = {
@@ -665,6 +665,10 @@ async function run_quiz(topic, containerId, globe) {
 
   // Initialize dist_by_country for heatmap
   const distanceByCountry = {};
+
+  // Initialize label mapping for histogram
+  let possibleAnswersMapping = {};
+
 
   console.log("Selected questions:", selectedQuestions);
 
@@ -821,7 +825,8 @@ async function run_quiz(topic, containerId, globe) {
 
   // Find the possible answers string for the selected question
   const questionData = data_answers.find(row => row.index === selected_question);
-  let possibleAnswersMapping = {};
+  console.log("question data", questionData);
+  possibleAnswersMapping = {};
   if (questionData && questionData.possible_answers) {
     // Parse and invert the possible_answers string
     const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
@@ -884,24 +889,29 @@ async function run_quiz(topic, containerId, globe) {
 
   // Dropdown event
   questionSelect.addEventListener("change", () => {
+
     const newQuestion = questionSelect.value;
     console.log("Debug - Question changed to:", newQuestion);
 
     // Find the possible answers mapping for the new question
     const questionData = data_answers.find(row => row.index === newQuestion);
-    let possibleAnswersMapping = {};
-    if (questionData && questionData.possible_answers) {
-        const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
-        for (const text in rawMapping) {
-            possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
-        }
+    possibleAnswersMapping = {};
+    
+    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+    for (const text in rawMapping) {
+        possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
     }
+    
     console.log("Debug - New Possible Answers Mapping:", possibleAnswersMapping);
 
     datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
     datasets.Age = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q287', ageMap);
     datasets.Religion = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q289', religionMap);
+    console.log("homemade question mapping", questionData)
     // Pass the updated possibleAnswersMapping to updateHistogram
+    console.log("📊 About to draw histogram with mapping:");
+    console.log(possibleAnswersMapping);
+
     updateHistogram(); // updateHistogram will now use the latest selected_question and generate the mapping internally
   });
 
@@ -925,145 +935,177 @@ function compute_final_score(dist){
 }
 
 function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
+
   const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear existing bars
-  console.log("Drawing histogram for data:", data);
-  console.log("Drawing histogram with possible answers mapping:", possibleAnswersMapping);
+  container.innerHTML = ""; // Clear previous content
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("width", 500)
-    .attr("height", 500);
+    .attr("width", 600)
+    .attr("height", 600);
 
-  const width = 500;
-  const height = 500;
+  const width = 600;
+  const height = 600;
   const innerRadius = 0;
   const outerRadius = 100;
 
   const g = svg.append("g")
     .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-  // Get all unique response values from the data and sort them numerically
-  const uniqueRanges = Array.from(new Set(data.flatMap(d => d.values.map(v => Number(v.range))))).sort(d3.ascending);
+  // Assign each group a base color from a palette
+  const colorPalette = [
+    '#3a015c', // purple
+    '#2b59c3', // blue
+    '#16c172', // green
+    '#f6c90e', // yellow
+    '#ff8811', // orange
+    '#ff4d6d', // red
+    '#9d4edd'  // violet
+  ];
 
-  // Define a color scale based on the unique response values
-  // Using a linear scale for color interpolation
-  const colorScale = d3.scaleLinear()
-    .domain([d3.min(uniqueRanges), d3.max(uniqueRanges)]) // Domain is the range of response values
-    .range(['#333333', '#dddddd']); // Range is the color spectrum (from dark purple to light purple)
+  const groupColor = d3.scaleOrdinal()
+    .domain(data.map(d => d.attribute))
+    .range(colorPalette.slice(0, data.length)); // just enough colors
 
-
-  // Use a fixed domain [0, 100] since values are percentages
   const radius = d3.scaleLinear()
-    .domain([0, 100]) 
+    .domain([0, 100])
     .range([innerRadius, outerRadius]);
 
   const angle = d3.scaleBand()
     .domain(data.map(d => d.attribute))
-    .range([0, 2*Math.PI]); // Full-circle - Corrected comment
+    .range([0, 2 * Math.PI]);
 
- // Define up to 7 visually distinct base colors (one for each group)
-const baseColors = [
-  '#3a015c', // purple
-  '#2b59c3', // blue
-  '#16c172', // green
-  '#f6c90e', // yellow
-  '#ff8811', // orange
-  '#ff4d6d', // red
-  '#9d4edd'  // violet
-];
+  data.forEach(group => {
+    const startAngle = angle(group.attribute);
+    const endAngle = startAngle + angle.bandwidth();
+    let cumulative = 0;
 
-// Get all unique group identifiers
-const groupAttributes = data.map(group => group.attribute);
+    // Sort values descending so darker slices are inside
+    const sortedValues = [...group.values].sort((a, b) => b.value - a.value);
 
-// Create a color scale assigning each group a base color
-const groupBaseColor = d3.scaleOrdinal()
-  .domain(groupAttributes)
-  .range(baseColors.slice(0, groupAttributes.length));
+    const base = d3.hcl(groupColor(group.attribute));
+    const totalSlices = sortedValues.length;
 
-// Iterate over each group
-data.forEach(group => {
-  let startAngle = angle(group.attribute);
-  let endAngle = startAngle + angle.bandwidth();
-  let cumulative = 0;
+    sortedValues.forEach((d, i) => {
+      const norm = i / (totalSlices - 1 || 1);
+      const lightness = 80 - norm * 40; // 80 → 40, lightest to darkest
+      const shadedColor = d3.hcl(base.h, base.c, lightness).toString();
 
-  // Sort values in descending order by d.value (for darkest to lightest)
-  const sortedValues = group.values.sort((a, b) => b.value - a.value);
+      const arc = d3.arc()
+        .innerRadius(radius(cumulative))
+        .outerRadius(radius(cumulative + d.value))
+        .startAngle(startAngle)
+        .endAngle(endAngle);
 
-  // Get base color for this group
-  const baseColor = d3.hcl(groupBaseColor(group.attribute));
+      g.append("path")
+        .attr("d", arc)
+        .attr("fill", shadedColor)
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5);
 
-  const totalSlices = sortedValues.length;
+      g.append("title")
+        .text(`${group.attribute}: ${possibleAnswersMapping[d.range] || d.range} - ${d.value}%`);
 
-  sortedValues.forEach((d, i) => {
-    // Compute normalized position (darkest = 0, lightest = 1)
-    const norm = i / (totalSlices - 1 || 1); // avoid divide-by-zero for 1-slice groups
-
-    // Set lightness: 40 (dark) → 80 (light)
-    const shadedColor = d3.hcl(baseColor.h, baseColor.c, 40 + norm * 40);
-
-    // Arc generator
-    let arc = d3.arc()
-      .innerRadius(radius(cumulative))
-      .outerRadius(radius(cumulative + d.value))
-      .startAngle(startAngle)
-      .endAngle(endAngle);
-
-    // Draw the path
-    g.append("path")
-      .attr("d", arc)
-      .attr("fill", shadedColor.toString())
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5);
-
-    // Tooltip
-    g.append("title")
-      .text(`${group.attribute}: ${possibleAnswersMapping[d.range] || d.range} - ${d.value}%`);
-
-    cumulative += d.value;
+      cumulative += d.value;
+    });
   });
-});
 
-
-  // Add attribute labels (e.g., Gender, Age, Religion)
-  const labelOffset = outerRadius + 40; // Increased label offset for better spacing
-  g.selectAll("text.attribute-label") // Changed class name for clarity
+  // Group Labels
+  const labelOffset = outerRadius + 40;
+  g.selectAll("text.attribute-label")
     .data(data)
     .enter()
     .append("text")
-    .attr("class", "attribute-label") // Changed class name
+    .attr("class", "attribute-label")
     .attr("x", d => Math.cos(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
     .attr("y", d => Math.sin(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
-    .text(d => d.attribute) // Display the attribute name (e.g., Male, 15-24, Roman Catholic)
+    .text(d => d.attribute)
     .style("font-size", "12px")
     .style("fill", "white");
 
-  // Corresponding values to colors (Dynamic Legend)
-  const legend = svg.append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${width / 2 - 150}, ${height - 30})`); // Adjust position for potentially more items
+    console.log("🎯 Inside draw_histogram, mapping received:");
+console.table(possibleAnswersMapping);
 
-  // Use the unique ranges for the legend and map to descriptive text if available
-  uniqueRanges.forEach((range, i) => {
-    const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 120}, 0)`); // Adjust spacing between legend items
+  // Legend (optional)
+const uniqueRanges = Array.from(
+    new Set(data.flatMap(d => d.values.map(v => Number(v.range))))
+  ).sort(d3.ascending);
 
-    // Colored rectangle
-    legendItem.append("rect")
-      .attr("width", 15)
-      .attr("height", 15)
-      .attr("fill", colorScale(range)); // Use color scale based on numerical range
+  // Improved dynamic legend with actual colors used per group
+const legend = svg.append("g")
+  .attr("class", "legend")
+  .attr("transform", `translate(20, ${height - 80})`); // Adjust position as needed
 
-    // Label next to it
-    legendItem.append("text")
-      .attr("x", 20)
-      .attr("y", 12)
-      .text(possibleAnswersMapping[range] || range) // Display descriptive text from mapping or the numerical range
-      .style("fill", "#fff")
-      .style("font-size", "12px");
-  });
+// 1. Extract full range of unique answer values (sorted)
+const fullRange = Array.from(
+  new Set(data.flatMap(group => group.values.map(d => Number(d.range))))
+).sort(d3.ascending);
+
+// 2. Create <defs> for the gray gradient
+const defs = svg.append("defs");
+
+const grayGradient = defs.append("linearGradient")
+  .attr("id", "gray-gradient")
+  .attr("x1", "0%")
+  .attr("x2", "100%");
+
+fullRange.forEach((rangeVal, i) => {
+  const norm = i / (fullRange.length - 1 || 1);
+  const lightness = 80 - norm * 40; // 80 (light gray) to 40 (dark gray)
+  const color = d3.hcl(0, 0, lightness).toString(); // HCL gray tone
+
+  grayGradient.append("stop")
+    .attr("offset", `${norm * 100}%`)
+    .attr("stop-color", color);
+});
+
+// 3. Draw the legend container group
+const legendGroup = svg.append("g")
+  .attr("class", "gray-legend")
+  .attr("transform", `translate(${width / 2 - 500 / 2}, ${height - 50})`);
+
+const gradientWidth = 500;
+const gradientHeight = 15;
+
+// 4. Draw the gray gradient bar
+legendGroup.append("rect")
+  .attr("width", gradientWidth)
+  .attr("height", gradientHeight)
+  .attr("fill", "url(#gray-gradient)")
+  .attr("stroke", "#ccc")
+  .attr("stroke-width", 0.5);
+
+// 5. Add ticks and labels
+const tickGroup = legendGroup.append("g")
+  .attr("transform", `translate(0, ${gradientHeight})`);
+
+fullRange.forEach((rangeVal, i) => {
+  const norm = i / (fullRange.length - 1 || 1);
+  const x = norm * gradientWidth;
+  const label = possibleAnswersMapping[rangeVal] || rangeVal;
+
+  // Tick line
+  tickGroup.append("line")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 0)
+    .attr("y2", 6)
+    .attr("stroke", "#ccc")
+    .attr("stroke-width", 1);
+
+  // Tick label
+  tickGroup.append("text")
+    .attr("x", x)
+    .attr("y", 18)
+    .attr("text-anchor", "middle")
+    .text(label)
+    .style("fill", "#fff")
+    .style("font-size", "12px");
+});
+
+
 }
 
 function computeBinnedDataset(data_clean, selected_country, selected_question, category_key, labelMap = {}) {
