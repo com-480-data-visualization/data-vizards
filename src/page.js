@@ -424,8 +424,8 @@ const codeISOMapping = {
   'NA': 'Namibia',
   'NR': 'Nauru',
   'NP': 'Nepal',
-  'NL': 'Netherlands (the)',
-  'NC': 'New Caledonia',
+  'NLD': 'Netherlands (the)',
+  'NCL': 'New Caledonia',
   'NZ': 'New Zealand',
   'NI': 'Nicaragua',
   'NE': 'Niger (the)',
@@ -796,16 +796,17 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
     buttonsContainer.appendChild(btn);
   });
 
-  // Histogram container (only the SVG will be cleared)
-  const histogramContainer = document.createElement("div");
-  histogramContainer.id = "histogram-container";
-  histogramModule.appendChild(histogramContainer);
+  // Histogram chart container (where the SVG is drawn)
+  const histogramChartContainer = document.createElement("div");
+  histogramChartContainer.id = "histogram-chart-container";
+  histogramModule.appendChild(histogramChartContainer);
 
   // Update histogram when dropdown or button changes
   function updateHistogram() {
     console.log("Debug - Drawing histogram for dataset:", selectedDataset);
     console.log("Debug - Dataset content:", datasets[selectedDataset]);
-    draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
+    // Pass the ID of the specific chart container to draw_histogram
+    draw_histogram("histogram-chart-container", datasets[selectedDataset], possibleAnswersMapping);
   }
 
   // Dropdown event
@@ -816,12 +817,12 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
     // Find the possible answers mapping for the new question
     const questionData = data_answers.find(row => row.index === newQuestion);
     possibleAnswersMapping = {};
-    
+
     const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
     for (const text in rawMapping) {
         possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
     }
-    
+
     console.log("Debug - New Possible Answers Mapping:", possibleAnswersMapping);
 
     datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
@@ -846,8 +847,8 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
       initialPossibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
     }
   }
-  // Pass the initial possibleAnswersMapping to draw_histogram
-  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]], initialPossibleAnswersMapping);
+  // Pass the initial possibleAnswersMapping to draw_histogram, targeting the chart container
+  draw_histogram("histogram-chart-container", datasets[Object.keys(datasets)[0]], initialPossibleAnswersMapping);
 }
 
 async function run_quiz(topic, containerId, globe) {
@@ -950,10 +951,32 @@ async function run_quiz(topic, containerId, globe) {
   console.log("with a final score of:", compute_final_score(closestCountry.totalDistance), "%")
   console.log("Quiz complete!");
 
-  // Get the original container
-  const originalContainer = document.getElementById(containerId);
-  originalContainer.innerHTML = ""; // Clear the container
+  // Get the container that held the quiz questions (which is the sectionSelector div)
+  const quizContainerElement = document.getElementById(containerId);
 
+  // Create the quiz results panel
+  const quizResultsPanel = document.createElement("div");
+  quizResultsPanel.id = "quiz-results-panel";
+  quizResultsPanel.classList.add("module"); // Add the module class for styling
+  quizResultsPanel.style.flexGrow = "1"; // Allow it to take up available space
+
+  // Add best match information to the quiz results panel
+  const bestMatchText = document.createElement("div");
+  bestMatchText.id = "best-match-text";
+  bestMatchText.style.color = "white"; // Set text color
+  bestMatchText.style.fontSize = "18px";
+  bestMatchText.style.marginBottom = "20px";
+  bestMatchText.innerHTML = `<h2>Best Match: ${codeISOMapping[countryISOMapping[closestCountry.country]]}</h2><p>Score: ${compute_final_score(closestCountry.totalDistance)}%</p>`;
+  quizResultsPanel.appendChild(bestMatchText);
+
+  // Replace the quiz container element with the quiz results panel
+  if (quizContainerElement && quizContainerElement.parentNode) {
+      quizContainerElement.parentNode.replaceChild(quizResultsPanel, quizContainerElement);
+  } else {
+      console.error("Could not find quiz container element or its parent to replace.");
+  }
+
+  // Show best match on the globe panel
   globe.chart.showBestMatch({
     name: codeISOMapping[countryISOMapping[closestCountry.country]],
     score: closestCountry.totalDistance
@@ -962,8 +985,8 @@ async function run_quiz(topic, containerId, globe) {
   console.log("Debug - Selected Country:", closestCountry.country);
   console.log("Debug - First few rows of data_clean:", data_clean.slice(0, 3));
 
-  // Build histograms with the selected country
-  build_histograms(containerId, closestCountry.country, data_clean, data_answers);
+  // Build histograms within the quiz results panel
+  build_histograms("quiz-results-panel", closestCountry.country, data_clean, data_answers);
 }
 
 function compute_final_score(dist){
@@ -1270,12 +1293,12 @@ function create_interactive_globe(container_id, onCountryClick){
     // Create heatmap
 		polygonSeries.set("heatRules", [{
 			target: polygonSeries.mapPolygons.template, 
-			dataField: "value",            // data field to read :contentReference[oaicite:1]{index=1}
-			key: "fill",                   // which visual property to drive
-			min: am5.color(0xeeeeee),      // color at the low end
-			max: am5.color(0x0052cc),       // color at the high end
-			minValue: 0,                   // enforce lowest domain
-      maxValue: 1,                    // enforce highest domain :contentReference[oaicite:0]{index=0}
+			dataField: "value",            
+			key: "fill",                   
+			min: am5.color(0xeeeeee),       
+			max: am5.color(0x0052cc),        
+			minValue: 0,                    
+      maxValue: 1,                     
       customFunction: (sprite, minValue, maxValue, value) => {
         let newColor;
           if (value == -1){
@@ -1289,7 +1312,7 @@ function create_interactive_globe(container_id, onCountryClick){
               percent,
               am5.color(0xeeeeee),
               am5.color(0x0052cc)
-              );  // uses am5.Color.interpolate under the hood :contentReference[oaicite:1]{index=1}
+              );  
             }
           // animate the fill property over 1s
           sprite.animate({
@@ -1313,20 +1336,19 @@ function create_interactive_globe(container_id, onCountryClick){
     );
 
     heatLegend.startLabel.setAll({
-      fill: am5.color(0xffffff),     // white text
-      fontSize: "0.75em",            // optional: tweak size
-      fontWeight: "500"              // optional: tweak weight
+      fill: am5.color(0xffffff),     
+      fontSize: "0.75em",            
+      fontWeight: "500"              
     });
 
     heatLegend.endLabel.setAll({
-      fill: am5.color(0xffffff),     // white text
-      fontSize: "0.75em",            // optional: tweak size
-      fontWeight: "500"              // optional: tweak weight
+      fill: am5.color(0xffffff),     
+      fontSize: "0.75em",            
+      fontWeight: "500"              
     });
 
 		// Remove tooltip on hover and disable hover fill (or comment them out)
 		polygonSeries.mapPolygons.template.setAll({
-			// tooltipText: "{name}", // Optional: if you want tooltips on activation, you can leave it.
 			toggleKey: "active",
 			interactive: true
 		});
@@ -1390,34 +1412,21 @@ function create_interactive_globe(container_id, onCountryClick){
     
     const panelLabel = panel.children.push(
       am5.Label.new(root, {
-        text: "",               // we'll fill this in later
+        text: "",               
         fontSize: 14,
         fill: am5.color(0x000000),
-
-        // **NEW PROPS** to center it perfectly:
-        width: am5.percent(100),    // span full width of panel
-        textAlign: "center",        // center the text inside that width
-        x: am5.percent(50),         // position the label's left x at 50%
-        centerX: am5.percent(50)    // align its center to that x
+        width: am5.percent(100),    
+        textAlign: "center",        
+        x: am5.percent(50),         
+        centerX: am5.percent(50)    
           })
     );
 
     // trigger function
     chart.showBestMatch = function(bestCountry) {
-      // 1) shrink the globe
-      /*
-      this.chartContainer.animate({
-        key: "scale",
-        to: 0.8,
-        duration: 600,
-        easing: am5.ease.out(am5.ease.cubic)
-      });
-      */
-      // 2) set panel text
       panelLabel.set("text", 
         `Best Match:\n${bestCountry.name}\nScore: ${compute_final_score(bestCountry.score.toFixed(2))}%`
       );
-      // 3) fade panel in
       panel.animate({
         key: "opacity",
         to: 1,
@@ -1428,30 +1437,26 @@ function create_interactive_globe(container_id, onCountryClick){
 
     // clickable country
     polygonSeries.mapPolygons.template.events.on("click", ev => {
-      // ev.target is the Sprite that was clicked
       const data = ev.target.dataItem.dataContext;
       const contryFinalScore = (data.value * 100).toFixed(2);
-      const countryId   = data.id;       // your alpha-2 code
+      const countryId = data.id;       // your alpha-2 code
       const countryName = data.name;     // human-readable name
       
       console.log(`Clicked: ${countryName} (${countryId})`);
 
-      // Get the 3-letter country code using the reverse mapping (assuming countryISOMapping is accessible)
+      // Get the 3-letter country code using the reverse mapping
       const threeLetterCode = getKeyByValue(countryISOMapping, countryId);
 
       if (threeLetterCode && typeof onCountryClick === 'function') {
         onCountryClick(threeLetterCode); // Pass the 3-letter code to the callback
       }
       
-      // — example: update your panel with details —
       panelLabel.set("text",
         `${countryName}\nScore: ${contryFinalScore}%`
       );
-      panel.current_country = data.id
+      panel.current_country = data.id;
     });
 
-
-		//resolve({ root, chart, polygonSeries });
     resolve({ root, chart, polygonSeries, panel, panelLabel });
 		});
   });
@@ -1740,54 +1745,41 @@ whenDocumentLoaded(async () => {
 	const dashboard = document.createElement("div");
 	dashboard.id = "dashboard";
 	document.body.appendChild(dashboard);
-	// Left Panel
+	// Left Panel (Globe)
 	const chartDiv = document.createElement("div");
 	chartDiv.id = "chartdiv";
   chartDiv.classList.add("module");
 	dashboard.appendChild(chartDiv);
 
-  let selected_country_code = null; // Variable to hold the currently selected country code for the histogram
-  let questionSelect = null; // Variable to hold the question select element
-  let datasets = { Gender: [], Age: [], Religion: [] }; // Variable to hold the datasets
+  // Right Panel (Initially Introduction, later Quiz Results/Histogram)
+  const introductionDiv = document.createElement("div");
+  introductionDiv.id = "introduction";
+  introductionDiv.classList.add("module");
+  dashboard.appendChild(introductionDiv);
 
-  // Function to update the histogram based on the selected country and question
-  function updateHistogram() {
-    if (!selected_country_code || !questionSelect) return; // Ensure country and question are selected
+  // Function to handle country selection (both initial and clicks)
+  const handleCountrySelection = (countryCode) => {
+    // Find the quiz results panel (it replaces the introduction panel after the quiz)
+    const quizResultsPanel = document.getElementById("quiz-results-panel");
+    if (quizResultsPanel) {
+       // Clear previous histogram and build new one within the existing quiz results panel
+      // Note: We are targeting the quizResultsPanel to append the histogram module to.
+      const histogramModule = document.getElementById("histogram-module");
+      if (histogramModule) {
+         histogramModule.remove(); // Remove the old histogram module
+      }
+      build_histograms("quiz-results-panel", countryCode, data_clean, data_answers);
+    }
+    // If quizResultsPanel doesn't exist, it means the quiz hasn't finished yet,
+    // so we don't build histograms on country click at this stage.
+  };
 
-    const selected_question = questionSelect.value; // Get the current selected question
+  // Create the globe with the country selection handler
+  const globe = await create_interactive_globe("chartdiv", handleCountrySelection);
 
-    console.log("Debug - Computing datasets with:");
-    console.log("- Country:", selected_country_code);
-    console.log("- Question:", selected_question);
-    console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
+	// Create the introduction content within the introduction panel
+	create_introduction("introduction", globe);
 
-    // Dynamically build datasets after a country/question is chosen
-    datasets.Gender = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q260', genderMap);
-    console.log("Debug - Gender dataset:", datasets.Gender);
-
-    datasets.Age = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q287', ageMap);
-    console.log("Debug - Age dataset:", datasets.Age);
-
-    datasets.Religion = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q289', religionMap);
-    console.log("Debug - Religion dataset:", datasets.Religion);
-
-    console.log("Debug - Drawing histogram for dataset:", Object.keys(datasets)[0]); // Draw default dataset initially
-    console.log("Debug - Dataset content:", datasets[Object.keys(datasets)[0]]);
-    draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]]); // Draw the default dataset (Gender)
-  }
-
-  // Pass the updateHistogram function to the globe creation
-	const globe = await create_interactive_globe("chartdiv", (countryCode) => {
-      selected_country_code = countryCode; // Update the selected country code
-      updateHistogram(); // Update the histogram
-  });
-
-	// Right Panel
-	const introduction = document.createElement("div");
-	introduction.id = "introduction";
-  introduction.classList.add("module");
-	dashboard.appendChild(introduction);
-	create_introduction("introduction",globe);
 	// verify that everything ran smoothly
 	console.log('working');
 });
