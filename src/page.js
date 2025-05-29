@@ -613,7 +613,7 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
     // For Global, exclude questions from the Demographics topic.
     filteredQuestions = dfMetaAnswers.filter(question => question.topic !== 'Demographics');
   } else {
-    filteredQuestions = dfMetaAnswers.filter(question => question.topic === selectedTopic);s
+    filteredQuestions = dfMetaAnswers.filter(question => question.topic === selectedTopic);
   }
   console.log("Filtered questions:", filteredQuestions);
 
