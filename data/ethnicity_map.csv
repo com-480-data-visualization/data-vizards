@@ -1,0 +1,427 @@
+code,mapped_category,ethnicity_string,country
+20001,1,Caucasian white,AND
+20002,2,Negro black,AND
+20003,3,South Asian,AND
+20004,4,East Asian,AND
+20005,5,Arabic/Central Asian,AND
+20999,8,Other,AND
+32001,1,White,ARG
+32002,8,Light brown,ARG
+32003,8,Dark brown,ARG
+32004,2,Black,ARG
+32005,7,Indigenous,ARG
+32999,8,Other,ARG
+36001,1,Australian (English speaking),AUS
+36002,1,European,AUS
+36003,3,South Asian,AUS
+36004,4,East Asian,AUS
+36005,5,Arabic/Central Asian,AUS
+36006,6,Southeast Asian,AUS
+36007,7,Aboriginal or Torres Strait Islander,AUS
+36999,8,Other,AUS
+50006,3,Bengali,BGD
+50007,3,Chakma,BGD
+50008,7,Murong,BGD
+51001,1,Armenian,ARM
+51005,1,Russian,ARM
+51006,5,Yazidis,ARM
+51007,8,Other,ARM
+68001,8,Not pertaining to Indigenous groups,BOL
+68002,7,Quechua,BOL
+68003,7,Aymara,BOL
+68004,7,Guaraní,BOL
+68005,7,Chiquitano,BOL
+68006,7,Mojeño,BOL
+68007,2,Afroboliviano,BOL
+68008,7,Indigenous with no further detail,BOL
+68999,8,Other,BOL
+76001,1,White,BRA
+76002,2,Black,BRA
+76003,8,Brown - Moreno ou pardo,BRA
+76004,4,Oriental (Chinese, Japanese...),BRA
+76005,7,Indigenous,BRA
+104001,6,Bamar,MMR
+104002,6,Kayin,MMR
+104003,6,Rakhine,MMR
+104004,6,Shan,MMR
+104005,6,Mon,MMR
+104999,8,Other,MMR
+124001,1,Caucasian (White),CAN
+124002,2,Black (African, African-American, etc.),CAN
+124003,5,West Asian (Iranian, Afghan, etc.),CAN
+124004,6,Southeast Asian (Vietnamese, Cambodian, Malaysian, etc.),CAN
+124005,5,Arabic (Central Asia),CAN
+124006,3,South Asian (Indian, Bangladeshi, Pakistani, Sri Lankan, etc.),CAN
+124007,8,Latin American / Hispanic,CAN
+124008,7,Aboriginal / First Nations,CAN
+124009,4,Chinese,CAN
+124010,6,Filipino,CAN
+124011,4,Korean,CAN
+124012,4,Japanese,CAN
+124999,8,Other,CAN
+152001,1,White, Caucasian,CHL
+152002,2,Black,CHL
+152008,7,Indigenous,CHL
+152009,4,Asiatic,CHL
+152012,8,Mestizo(a),CHL
+152013,8,Mulatto(a),CHL
+152999,8,Other,CHL
+156001,4,Chinese,CHN
+158001,4,Hakka from Taiwan,TWN
+158002,4,Minnanese from Taiwan,TWN
+158003,4,Mainlander/China,TWN
+158004,7,Aboriginal,TWN
+158999,8,Other,TWN
+170008,2,Afro-colombian,COL
+170009,8,Gypsie,COL
+170010,7,Indigenous,COL
+170011,1,White,COL
+170999,8,Other,COL
+196001,1,Caucasian white,CYP
+196003,3,South Asian (Indian, Pakistani, etc.),CYP
+196005,5,Arabic/Central Asian,CYP
+203004,1,Slovak,CZE
+203005,1,Poland,CZE
+203006,1,Ukrainian,CZE
+203010,8,Other,CZE
+218011,1,Blanco,ECU
+218012,8,Mestizo,ECU
+218013,2,Negro,ECU
+218014,7,Indígena,ECU
+218017,8,Montubio,ECU
+218018,8,Mulato,ECU
+231001,2,Amhara,ETH
+231002,2,Tigre,ETH
+231003,2,Oromo,ETH
+231004,2,Somali,ETH
+231005,2,Afar,ETH
+231006,2,Sidama,ETH
+231007,2,Wolayta,ETH
+231998,2,Other Africans/Negro Black,ETH
+231999,8,Other,ETH
+300001,1,Caucasian white,GRC
+300002,2,Negro Black,GRC
+300004,4,East Asian (Chinese, Japanese, etc.),GRC
+300005,5,Arabic/Central Asian,GRC
+320001,8,Ladino,GTM
+320002,8,Cross breed,GTM
+320003,8,Brown,GTM
+320004,7,Indigenous,GTM
+320005,1,White,GTM
+320006,8,Hispanic,GTM
+344001,4,Chinese,HKG
+344002,6,Filipino,HKG
+344003,8,Indonesian,HKG
+344004,1,White,HKG
+344005,3,Indian,HKG
+344006,3,Nepalese,HKG
+344007,3,Pakistani,HKG
+344008,6,Thai,HKG
+344998,6,Other Asian,HKG
+344999,8,Other,HKG
+356017,3,Hindu (Scheduled Castes),IND
+356018,3,Hindu (Scheduled Tribes),IND
+356019,3,Hindu (Other Backward Castes),IND
+356024,3,General,IND
+360002,4,Chinese,IDN
+360004,6,Javanese,IDN
+360005,6,Sundanese,IDN
+360007,6,Aceh,IDN
+360008,6,Batak,IDN
+360009,6,Banjar,IDN
+360010,6,Betawi,IDN
+360011,6,Bengkulu,IDN
+360012,6,Bugis,IDN
+360013,6,Dani,IDN
+360014,6,Dayak,IDN
+360015,6,Flores,IDN
+360017,6,Lampung,IDN
+360018,6,Maduranese,IDN
+360019,6,Makassar,IDN
+360020,6,Mandar,IDN
+360021,6,Manggarai,IDN
+360022,6,Melayu,IDN
+360023,6,Minangkabau,IDN
+360024,6,Palembang,IDN
+360026,6,Toraja,IDN
+360999,8,Other,IDN
+364001,5,Persian,IRN
+364002,5,Turk/Azeri,IRN
+364003,5,Kurd,IRN
+364004,5,Lor,IRN
+364005,5,Gilak/Mazani/Shomali,IRN
+364006,5,Baluch,IRN
+364007,5,Arab,IRN
+364999,8,Other,IRN
+368001,5,Arab,IRQ
+368002,5,Kurdish,IRQ
+368003,5,Turk,IRQ
+368004,5,Ashur,IRQ
+398001,4,Korean,KAZ
+398002,5,Uigur,KAZ
+398003,1,Bashkir,KAZ
+398004,1,Lezgin,KAZ
+398005,1,Belorus,KAZ
+398021,5,Azeri,KAZ
+398022,5,Iranian and Central Asian,KAZ
+398023,1,Georgian,KAZ
+398024,1,German,KAZ
+398025,5,Kazakh,KAZ
+398026,5,Kurdish,KAZ
+398027,5,Kyrgyz,KAZ
+398028,1,Moldovan,KAZ
+398029,1,Russian,KAZ
+398030,5,Tajik,KAZ
+398031,5,Tatar,KAZ
+398032,1,Ukrainian,KAZ
+398033,5,Uzbek,KAZ
+398040,5,Turkish,KAZ
+404001,2,Kalenjin,KEN
+404002,2,Kamba,KEN
+404003,2,Kikuyu,KEN
+404004,2,Kisii,KEN
+404005,2,Luhya,KEN
+404006,2,Luo,KEN
+404007,2,Maasai,KEN
+404008,2,Meru,KEN
+404009,2,Mijikenda,KEN
+404010,2,Somalis,KEN
+404011,2,Turkana,KEN
+404014,5,Arabs in Kenya (Arabic, Central Asian),KEN
+404016,8,Other,KEN
+410004,4,East Asian (Chinese, Japanese, etc),KOR
+417001,5,Kirguís,KGZ
+417002,1,European,KGZ
+417003,5,Tayiko,KGZ
+417004,1,Ruso,KGZ
+417005,5,Kazakh,KGZ
+417999,8,Other,KGZ
+434005,5,Arabic,LBY
+434006,7,Amazigh,LBY
+434007,7,Tuareg,LBY
+434008,7,Toubou,LBY
+434999,8,Other,LBY
+446001,1,Caucasian white,MAC
+446003,3,South Asian (Indian, Pakistani, etc.),MAC
+446004,4,East Asian (Chinese, Japanese, etc.),MAC
+446006,4,Chinese,MAC
+446007,1,Portuguese/Macaense,MAC
+446008,6,Southeast Asians (Indonesia, Philippines, Thailand),MAC
+446999,8,Other,MAC
+458004,6,Malay,MYS
+458012,4,Chinese,MYS
+458014,3,Indian,MYS
+462001,1,Caucasian white,MDV
+462003,3,South Asian (India, Pakistani, etc.),MDV
+462004,4,East Asian (Chinese, Japanese, etc.),MDV
+484001,1,White,MEX
+484002,8,Light brown,MEX
+484003,8,Dark brown,MEX
+484004,2,Black,MEX
+484005,7,Indigenous,MEX
+496001,6,Khalkh,MNG
+496002,6,Dorvod,MNG
+496003,6,Bayad,MNG
+496004,6,Buriad,MNG
+496005,6,Zakhchin,MNG
+496006,6,Myangad,MNG
+496007,6,Uuld,MNG
+496008,5,Kazakh,MNG
+496009,6,Tuva,MNG
+496011,6,Dariganga,MNG
+496012,6,Uzemchin,MNG
+496014,6,Uriankhai,MNG
+496015,6,Khoton,MNG
+496016,6,Darkhad,MNG
+496017,6,Torguud,MNG
+504005,5,Arabe,MAR
+528001,1,Caucasian white,NLD
+528002,2,Negro Black,NLD
+528003,3,South Asian (Indian, Pakistani, etc.),NLD
+528004,4,East Asian (Chinese, Japanese, etc.),NLD
+528005,5,Arabic/Central Asian,NLD
+528999,8,Other,NLD
+558001,8,Half Blood,NIC
+558002,7,Indigenous,NIC
+558003,2,Afrocaribeño,NIC
+558999,8,Other,NIC
+566001,2,Yoruba,NGA
+566002,2,Hausa,NGA
+566003,2,Igbo,NGA
+566004,2,Fulani,NGA
+566005,2,Tiv,NGA
+566006,2,Ibibio,NGA
+566998,2,Other Africans,NGA
+566999,8,Others,NGA
+586001,3,Punjabi,PAK
+586003,3,Baluchi,PAK
+586004,3,Sindhi,PAK
+586005,3,Urdu speaking,PAK
+586006,3,Pashto,PAK
+586007,3,Hindko,PAK
+586008,3,Seraiki,PAK
+586009,3,Hindko,PAK
+586999,8,Others,PAK
+604001,1,White,PER
+604012,7,Indigenous / Native,PER
+604013,7,Indigenous half-breed,PER
+604014,2,Afro half-breed,PER
+604015,4,Asian half-breed,PER
+604016,1,European half-breed,PER
+604998,8,Migrant of other origin,PER
+604999,8,Other,PER
+608001,6,Tagalog,PHL
+608002,6,Bisaya,PHL
+608003,6,Ilonggo,PHL
+608004,6,Bicolano,PHL
+608005,6,Ilocano,PHL
+608006,6,Waray,PHL
+608007,6,Chabacano,PHL
+608010,6,Kapampangan,PHL
+608015,6,Aklanon,PHL
+608017,6,Sama,PHL
+608018,6,Matanao,PHL
+608020,6,Bilaan,PHL
+608024,6,Cebuano,PHL
+608026,6,Antiqueño,PHL
+608027,6,Masbateno,PHL
+608028,6,Pangasinense,PHL
+608031,6,Tausog,PHL
+608032,6,Suriganon,PHL
+608039,6,Maguindanao,PHL
+608047,6,Igorot,PHL
+608048,6,Yakan,PHL
+608049,6,Marinduque,PHL
+608050,6,Ayangan (Kankanaey),PHL
+608051,6,Tinguiuan Tribe,PHL
+608052,6,Belwang tribe,PHL
+608053,6,Matinguian Tribe,PHL
+608054,6,Sambal,PHL
+608055,6,Mangyan,PHL
+608056,6,Romblomanon,PHL
+608057,6,Subanin,PHL
+608058,6,Cantilangnon,PHL
+630001,1,White,PRI
+630002,2,Black,PRI
+630007,7,Indigenous,PRI
+630012,8,Light brown,PRI
+630013,8,Dark brown,PRI
+630999,8,Other,PRI
+642005,1,Caucasian white,ROU
+642999,8,Other,ROU
+643001,1,Russian,RUS
+643002,5,Tatar,RUS
+643003,1,Ukrainian,RUS
+643005,1,Jew,RUS
+643007,1,German,RUS
+643015,1,Georgian,RUS
+643016,1,Armenian,RUS
+643020,1,Moldovan,RUS
+643023,1,Italian,RUS
+643025,5,Kazakh,RUS
+643036,5,Azeri,RUS
+643037,4,North-East Asian,RUS
+643040,5,Tajik,RUS
+643053,5,Kyrgyz,RUS
+643080,5,Uzbek,RUS
+643097,5,Iranian and Central Asian,RUS
+643999,8,Other,RUS
+688001,1,Caucasian white,SRB
+688999,8,Other,SRB
+702001,1,Caucasian white,SGP
+702003,3,South Asian (Indian, Pakistan, etc.),SGP
+702004,4,Chinese,SGP
+702006,6,Malay,SGP
+702008,8,Eurasian,SGP
+702999,8,Others,SGP
+703001,8,Gypsy,SVK
+703003,1,Slovak,SVK
+703006,1,Hungarian,SVK
+703008,1,Ruthenian,SVK
+703009,1,Bohemia/Czech Republic,SVK
+703999,8,Other,SVK
+704001,6,Kinh,VNM
+704002,6,Muong,VNM
+704007,6,Thai,VNM
+704009,4,China,VNM
+716001,2,Africans/Negro Black,ZWE
+716002,1,Caucasian White,ZWE
+716006,2,Shona,ZWE
+716007,2,Ndebele,ZWE
+716008,5,Arabic/Central Asian,ZWE
+716999,8,Other,ZWE
+762001,5,Tajik,TJK
+762002,5,Uzbek,TJK
+762004,1,Russian,TJK
+764001,6,Thai,THA
+764002,4,China,THA
+764003,6,Malayu,THA
+764004,7,Tribe,THA
+764999,8,Other,THA
+788002,2,Negro Black,TUN
+788003,7,Tamazight (Berber),TUN
+788005,5,Arabic,TUN
+788999,8,Other,TUN
+804001,1,Ukrainians,UKR
+804002,1,Russians,UKR
+804003,1,Belarusians,UKR
+804004,5,Tatars,UKR
+804005,1,Jews,UKR
+804999,8,Other,UKR
+818001,5,Arab,EGY
+818004,5,Noba,EGY
+818006,5,Coptic,EGY
+818999,8,Other,EGY
+826002,2,Black-Caribbean,GBR
+826003,2,Black-African,GBR
+826004,2,Black-Other,GBR
+826005,3,Indian,GBR
+826006,3,Pakistani,GBR
+826007,3,Bangladeshi,GBR
+826008,4,Chinese,GBR
+826015,5,Arabic/Central Asian,GBR
+826016,8,Mixed race,GBR
+826100,1,English / Welsh / Scottish / Northern Irish / British,GBR
+826101,1,Irish,GBR
+826102,8,Gypsy or Irish Traveller,GBR
+826103,1,Any other White background,GBR
+826104,8,White and Black Caribbean,GBR
+826105,8,White and Black African,GBR
+826106,8,White and Asian,GBR
+826107,8,Any other Asian background,GBR
+826999,8,Other ethnic group,GBR
+840001,1,White (non-Hispanic),USA
+840002,2,Black (non-Hispanic),USA
+840003,8,Other (non-Hispanic),USA
+840004,8,Hispanic,USA
+840005,8,Two plus (non-Hispanic),USA
+858100,1,White,URY
+858101,2,Afro or black,URY
+858102,7,Indigenous,URY
+858103,8,Half Blood,URY
+858104,8,Mulatto,URY
+858105,4,Asian,URY
+858999,8,Other,URY
+860001,5,Uzbek,UZB
+860002,1,Russian,UZB
+860003,5,Tatarin,UZB
+860004,5,Kazakhs,UZB
+860005,5,Karakalpak,UZB
+860006,5,Tajik,UZB
+860007,5,Kyrgyz,UZB
+860008,5,Turkmen,UZB
+862001,1,White,VEN
+862002,8,Mestizo / Light brown,VEN
+862003,2,Dark-skinned / Dark-brown,VEN
+862004,2,Black,VEN
+862005,7,Indigenous,VEN
+909002,1,English / Welsh / Scottish / Northern Irish / British,NIR
+909003,1,Irish,NIR
+909005,1,Any other White background,NIR
+909007,8,White and Black African,NIR
+909010,3,Indian,NIR
+909013,4,Chinese,NIR
+909014,4,Any other Asian background,NIR
+909015,2,African,NIR
+909016,2,Caribbean,NIR
+909017,8,Any other Black / African / Caribbean background,NIR
