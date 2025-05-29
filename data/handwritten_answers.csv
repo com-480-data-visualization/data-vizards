@@ -1,4 +1,4 @@
-﻿index,overall_question,specific_question,possible_answers,topic
+index,overall_question,specific_question,possible_answers,topic
 Q1,How important is it in your life?,Family,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
 Q2,How important is it in your life?,Friends,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
 Q3,How important is it in your life?,Leisure time,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
@@ -6,10 +6,10 @@ Q4,How important is it in your life?,Politics,"{'Very important': 1, 'Rather imp
 Q5,How important is it in your life?,Work,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
 Q6,How important is it in your life?,Religion,"{'Very important': 1, 'Rather important': 2, 'Not very important': 3, 'Not at all important': 4}","Social values, attitudes and stereotypes"
 Q29,"Do you 
-strongly agree, agree, disagree, or strongly disagree?","On the whole, men make better political leaders than women do ","{'Strongly agree': 1, 'Agree': 2, 'Disagree': 3, 'Strongly agree': 4}","Social values, attitudes and stereotypes"
-Q37, Do you agree or disagree with them?,It is a duty towards society to have children ,"{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4}","Social values, attitudes and stereotypes"
+strongly agree, agree, disagree, or strongly disagree?","On the whole, men make better political leaders than women do ","{'Strongly agree': 1, 'Agree': 2, 'Disagree': 3, 'Strongly disagree': 4}","Social values, attitudes and stereotypes"
+Q37, Do you agree or disagree with them?,It is a duty towards society to have children ,"{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4, 'Strongly disagree': 5}","Social values, attitudes and stereotypes"
 Q41, Do you agree or disagree with them?,"Work should always come first, even if it means less spare 
-time ","{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4}","Social values, attitudes and stereotypes"
+time ","{'Strongly agree': 1, 'Agree': 2, 'Neither agree nor disagree': 3, 'Disagree': 4, 'Strongly disagree': 5}","Social values, attitudes and stereotypes"
 Q59,"Could you tell me for each whether you trust 
 people from this group completely, somewhat, not very much or not at all?",Your family,"{'Trust completely': 1, 'Trust somewhat': 2, 'Do not trust very much': 3, 'Do not trust at all': 4}","Social capital, trust and organizational membership"
 Q60,"Could you tell me for each whether you trust 
