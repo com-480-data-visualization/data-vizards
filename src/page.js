@@ -932,11 +932,11 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("width", 600)
-    .attr("height", 600);
+    .attr("width", 500)
+    .attr("height", 500);
 
-  const width = 600;
-  const height = 600;
+  const width = 500;
+  const height = 500;
   const innerRadius = 0;
   const outerRadius = 100;
 
@@ -962,34 +962,68 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
     .domain(data.map(d => d.attribute))
     .range([0, 2*Math.PI]); // Full-circle - Corrected comment
 
-  data.forEach(group => {
-    let startAngle = angle(group.attribute);
-    let endAngle = startAngle + angle.bandwidth();
-    let cumulative = 0;
+ // Define up to 7 visually distinct base colors (one for each group)
+const baseColors = [
+  '#3a015c', // purple
+  '#2b59c3', // blue
+  '#16c172', // green
+  '#f6c90e', // yellow
+  '#ff8811', // orange
+  '#ff4d6d', // red
+  '#9d4edd'  // violet
+];
 
-    // Sort values within each group numerically by range
-    const sortedValues = group.values.sort((a, b) => Number(a.range) - Number(b.range));
+// Get all unique group identifiers
+const groupAttributes = data.map(group => group.attribute);
 
-    sortedValues.forEach(d => {
-      let arc = d3.arc()
-        .innerRadius(radius(cumulative))
-        .outerRadius(radius(cumulative + d.value)) // Use cumulative percentage for stacked arcs
-        .startAngle(startAngle)
-        .endAngle(endAngle);
+// Create a color scale assigning each group a base color
+const groupBaseColor = d3.scaleOrdinal()
+  .domain(groupAttributes)
+  .range(baseColors.slice(0, groupAttributes.length));
 
-      g.append("path")
-        .attr("d", arc)
-        .attr("fill", colorScale(Number(d.range))) // Use the numerical range for color scale
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5);
+// Iterate over each group
+data.forEach(group => {
+  let startAngle = angle(group.attribute);
+  let endAngle = startAngle + angle.bandwidth();
+  let cumulative = 0;
 
-      // Add tooltip for each arc
-      g.append("title")
-        .text(`${group.attribute}: ${possibleAnswersMapping[d.range] || d.range} - ${d.value}%`);
+  // Sort values in descending order by d.value (for darkest to lightest)
+  const sortedValues = group.values.sort((a, b) => b.value - a.value);
 
-      cumulative += d.value; // Accumulate percentage for stacking
-    });
+  // Get base color for this group
+  const baseColor = d3.hcl(groupBaseColor(group.attribute));
+
+  const totalSlices = sortedValues.length;
+
+  sortedValues.forEach((d, i) => {
+    // Compute normalized position (darkest = 0, lightest = 1)
+    const norm = i / (totalSlices - 1 || 1); // avoid divide-by-zero for 1-slice groups
+
+    // Set lightness: 40 (dark) → 80 (light)
+    const shadedColor = d3.hcl(baseColor.h, baseColor.c, 40 + norm * 40);
+
+    // Arc generator
+    let arc = d3.arc()
+      .innerRadius(radius(cumulative))
+      .outerRadius(radius(cumulative + d.value))
+      .startAngle(startAngle)
+      .endAngle(endAngle);
+
+    // Draw the path
+    g.append("path")
+      .attr("d", arc)
+      .attr("fill", shadedColor.toString())
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5);
+
+    // Tooltip
+    g.append("title")
+      .text(`${group.attribute}: ${possibleAnswersMapping[d.range] || d.range} - ${d.value}%`);
+
+    cumulative += d.value;
   });
+});
+
 
   // Add attribute labels (e.g., Gender, Age, Religion)
   const labelOffset = outerRadius + 40; // Increased label offset for better spacing
