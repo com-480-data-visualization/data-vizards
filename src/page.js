@@ -606,7 +606,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 1) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 15) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {
@@ -1010,10 +1010,8 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("viewBox", "0 0 600 600")
-    .attr("preserveAspectRatio", "xMidYMid meet")
-    .style("width", "100%")
-    .style("height", "auto");
+    .attr("width", 600)
+    .attr("height", 600);
 
   const width = 600;
   const height = 600;
@@ -1504,7 +1502,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
   // Define layout constants.
   const width = 900 ,
         height = 500,
-        barHeight = 17,
+        barHeight = 12,
         offsetLeft = 50,
         offsetTop = 80,
         barGap = 30;
