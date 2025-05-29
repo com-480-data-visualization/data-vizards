@@ -893,14 +893,20 @@ function draw_histogram(containerId, data) {
   const width = 500;
   const height = 500;
   const innerRadius = 0;
-  const outerRadius = 50;
+  const outerRadius = 100;
 
   const g = svg.append("g")
     .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-  const colorScale = d3.scaleOrdinal()
-    .domain(['1-3', '4-6', '7-10'])
-    .range(['#3a015c', '#86469c', '#caa6dd']);
+  // Get all unique response values from the data and sort them numerically
+  const uniqueRanges = Array.from(new Set(data.flatMap(d => d.values.map(v => Number(v.range))))).sort(d3.ascending);
+
+  // Define a color scale based on the unique response values
+  // Using a linear scale for color interpolation
+  const colorScale = d3.scaleLinear()
+    .domain([d3.min(uniqueRanges), d3.max(uniqueRanges)]) // Domain is the range of response values
+    .range(['#3a015c', '#caa6dd']); // Range is the color spectrum (from dark purple to light purple)
+
 
   const maxVal = d3.max(data.flatMap(d => d.values.map(v => v.value)));
   const radius = d3.scaleLinear()
@@ -909,37 +915,40 @@ function draw_histogram(containerId, data) {
 
   const angle = d3.scaleBand()
     .domain(data.map(d => d.attribute))
-    .range([0, 2*Math.PI]); // Full-circle
+    .range([0, 2*Math.PI]); // Full-circle - Corrected comment
 
   data.forEach(group => {
     let startAngle = angle(group.attribute);
     let endAngle = startAngle + angle.bandwidth();
     let cumulative = 0;
 
-    group.values.forEach(d => {
+    // Sort values within each group numerically by range
+    const sortedValues = group.values.sort((a, b) => Number(a.range) - Number(b.range));
+
+    sortedValues.forEach(d => {
       let arc = d3.arc()
         .innerRadius(radius(cumulative))
-        .outerRadius(radius(cumulative + d.value))
+        .outerRadius(radius(cumulative + d.value)) // Use cumulative percentage for stacked arcs
         .startAngle(startAngle)
         .endAngle(endAngle);
 
       g.append("path")
         .attr("d", arc)
-        .attr("fill", colorScale(d.range))
+        .attr("fill", colorScale(Number(d.range))) // Use the numerical range for color scale
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.5);
 
-      cumulative += d.value;
+      cumulative += d.value; // Accumulate percentage for stacking
     });
   });
 
-  // Add gender labels
-  const labelOffset = (innerRadius + outerRadius) / 2 + 10; 
-  g.selectAll("text.gender-label")
+  // Add attribute labels (e.g., Gender, Age, Religion)
+  const labelOffset = outerRadius + 20; // Adjust label offset
+  g.selectAll("text.attribute-label") // Changed class name for clarity
     .data(data)
     .enter()
     .append("text")
-    .attr("class", "gender-label")
+    .attr("class", "attribute-label") // Changed class name
     .attr("x", d => Math.cos(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
     .attr("y", d => Math.sin(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
     .attr("text-anchor", "middle")
@@ -948,27 +957,27 @@ function draw_histogram(containerId, data) {
     .style("font-size", "12px")
     .style("fill", "white");
 
-  // Corresponding values to colors
+  // Corresponding values to colors (Dynamic Legend)
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${width / 2 - 75}, ${height - 30})`); // Adjust position
+    .attr("transform", `translate(${width / 2 - 150}, ${height - 30})`); // Adjust position for potentially more items
 
-  const ranges = colorScale.domain();
-  ranges.forEach((range, i) => {
+  // Use the unique ranges for the legend
+  uniqueRanges.forEach((range, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 80}, 0)`);
+      .attr("transform", `translate(${i * 40}, 0)`); // Adjust spacing between legend items
 
     // Colored rectangle
     legendItem.append("rect")
       .attr("width", 15)
       .attr("height", 15)
-      .attr("fill", colorScale(range));
+      .attr("fill", colorScale(range)); // Use color scale based on numerical range
 
     // Label next to it
     legendItem.append("text")
       .attr("x", 20)
       .attr("y", 12)
-      .text(range)
+      .text(range) // Display the numerical range
       .style("fill", "#fff")
       .style("font-size", "12px");
   });
