@@ -950,7 +950,7 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
   // Using a linear scale for color interpolation
   const colorScale = d3.scaleLinear()
     .domain([d3.min(uniqueRanges), d3.max(uniqueRanges)]) // Domain is the range of response values
-    .range(['#3a015c', '#caa6dd']); // Range is the color spectrum (from dark purple to light purple)
+    .range(['#333333', '#dddddd']); // Range is the color spectrum (from dark purple to light purple)
 
 
   // Use a fixed domain [0, 100] since values are percentages
