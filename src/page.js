@@ -527,62 +527,22 @@ const allCountries = am5geodata_worldLow.features.map(f => ({
 
 const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75', 'Should global orgs prioritize effectiveness or democracy?': 'Q90'}
 
-// Hardcoded datasets for the histogram
-const datasets = {
-  Gender: [
-    {
-      attribute: "Male",
-      values: [
-        { range: '1-3', value: 5 },
-        { range: '4-6', value: 10 },
-        { range: '7-10', value: 15 }
-      ]
-    },
-    {
-      attribute: "Female",
-      values: [
-        { range: '1-3', value: 3 },
-        { range: '4-6', value: 6 },
-        { range: '7-10', value: 9 }
-      ]
-    }
-  ],
-  Age: [
-    {
-      attribute: "Group1",
-      values: [
-        { range: '1-3', value: 8 },
-        { range: '4-6', value: 12 },
-        { range: '7-10', value: 6 }
-      ]
-    },
-    {
-      attribute: "Group2",
-      values: [
-        { range: '1-3', value: 7 },
-        { range: '4-6', value: 5 },
-        { range: '7-10', value: 13 }
-      ]
-    }
-  ],
-  Religion: [
-    {
-      attribute: "A",
-      values: [
-        { range: '1-3', value: 20 },
-        { range: '4-6', value: 10 },
-        { range: '7-10', value: 5 }
-      ]
-    },
-    {
-      attribute: "B",
-      values: [
-        { range: '1-3', value: 10 },
-        { range: '4-6', value: 8 },
-        { range: '7-10', value: 12 }
-      ]
-    }
-  ]
+// Mapping objects for histogram data
+const genderMap = { 1: "Male", 2: "Female" };
+const ageMap = {
+  1: '15-24', 2: '25-34', 3: '35-44',
+  4: '45-54', 5: '55-64', 6: '65+'
+};
+const religionMap = {
+  0: 'No',
+  1: 'Roman Catholic',
+  2: 'Protestant',
+  3: 'Orthodox',
+  4: 'Jew',
+  5: 'Muslim',
+  6: 'Hindu',
+  7: 'Buddhist',
+  8: 'Other (text)'
 };
 
 /*
@@ -789,36 +749,24 @@ async function run_quiz(topic, containerId, globe) {
   console.log("with a final score of:", compute_final_score(closestCountry.totalDistance), "%")
   console.log("Quiz complete!");
 
+  // Get the original container
+  const originalContainer = document.getElementById(containerId);
+  originalContainer.innerHTML = ""; // Clear the container
+
   globe.chart.showBestMatch({
     name: codeISOMapping[countryISOMapping[closestCountry.country]],
     score: closestCountry.totalDistance
   });
 
-  console.log(globe.panel.current_country)
+  console.log("Debug - Selected Country:", closestCountry.country);
+  console.log("Debug - First few rows of data_clean:", data_clean.slice(0, 3));
 
-  // CAMILLE
-  /// INCLUDE HISTOGRAM HERE
-  const finalContainer = resetContainer(containerId);
-
-  // In your run_quiz function after resetting the finalContainer:
-  finalContainer.style.display = "flex";
-  finalContainer.style.height = "100vh";        // Full viewport height
-  finalContainer.style.justifyContent = "flex-end"; // Align children to right side horizontally
-  finalContainer.style.alignItems = "center";   // Vertically center children
-
-  // Buttons container (put on right side)
-  //const buttonsContainer = document.createElement("div");
-  //buttonsContainer.id = "buttons-container";
-  //buttonsContainer.style.width = "200px";
-  //buttonsContainer.style.marginRight = "20px";
-  //finalContainer.appendChild(buttonsContainer);
-
-  // Histogram module (parent for dropdown and histogram)
+  // Create histogram module directly in the original container
   const histogramModule = document.createElement("div");
   histogramModule.id = "histogram-module";
   histogramModule.style.flexGrow = "1";
   histogramModule.style.marginRight = "20px";
-  finalContainer.appendChild(histogramModule);
+  originalContainer.appendChild(histogramModule);
 
   // Dropdown for questions (Exploration_questions)
   const dropdownContainer = document.createElement("div");
@@ -834,7 +782,7 @@ async function run_quiz(topic, containerId, globe) {
 
   Object.keys(Exploration_questions).forEach((key) => {
     const option = document.createElement("option");
-    option.value = key;
+    option.value = Exploration_questions[key];  // Use the question code as value
     option.text = key;
     questionSelect.appendChild(option);
   });
@@ -850,6 +798,32 @@ async function run_quiz(topic, containerId, globe) {
   buttonsContainer.style.gap = "12px";
   buttonsContainer.style.marginBottom = "24px";
   histogramModule.appendChild(buttonsContainer);
+
+  // Initialize datasets object
+  const datasets = {
+    Gender: [],
+    Age: [],
+    Religion: []
+  };
+
+  // Get the selected country and question
+  const selected_country = closestCountry.country;  // This is already in the correct format (3-letter code)
+  const selected_question = questionSelect.value;
+
+  console.log("Debug - Computing datasets with:");
+  console.log("- Country:", selected_country);
+  console.log("- Question:", selected_question);
+  console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
+
+  // Dynamically build datasets after a country/question is chosen
+  datasets.Gender = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q260', genderMap);
+  console.log("Debug - Gender dataset:", datasets.Gender);
+
+  datasets.Age = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q287', ageMap);
+  console.log("Debug - Age dataset:", datasets.Age);
+
+  datasets.Religion = computeBinnedDataset(data_clean, selected_country, selected_question, 'Q289', religionMap);
+  console.log("Debug - Religion dataset:", datasets.Religion);
 
   const datasetKeys = Object.keys(datasets);
   let selectedDataset = datasetKeys[0]; // Default
@@ -882,13 +856,23 @@ async function run_quiz(topic, containerId, globe) {
 
   // Update histogram when dropdown or button changes
   function updateHistogram() {
+    console.log("Debug - Drawing histogram for dataset:", selectedDataset);
+    console.log("Debug - Dataset content:", datasets[selectedDataset]);
     draw_histogram("histogram-container", datasets[selectedDataset]);
   }
 
   // Dropdown event
-  questionSelect.addEventListener("change", updateHistogram);
+  questionSelect.addEventListener("change", () => {
+    const newQuestion = questionSelect.value;
+    console.log("Debug - Question changed to:", newQuestion);
+    datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
+    datasets.Age = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q287', ageMap);
+    datasets.Religion = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q289', religionMap);
+    updateHistogram();
+  });
 
   // Initial draw
+  console.log("Debug - Performing initial histogram draw");
   updateHistogram();
 }
 
@@ -990,6 +974,56 @@ function draw_histogram(containerId, data) {
   });
 }
 
+function computeBinnedDataset(data_clean, selected_country, selected_question, category_key, labelMap = {}) {
+  // Filter data for the selected country and ensure all required columns have positive values
+  const valid = data_clean.filter(row => 
+    row.B_COUNTRY_ALPHA === selected_country &&
+    row[selected_question] > 0 &&
+    row[category_key] > 0
+  );
+
+  // Group the data by category and question value
+  const grouped = {};
+  valid.forEach(row => {
+    const groupVal = row[category_key];
+    const questionVal = row[selected_question];
+    
+    if (!grouped[groupVal]) {
+      grouped[groupVal] = {};
+    }
+    if (!grouped[groupVal][questionVal]) {
+      grouped[groupVal][questionVal] = 0;
+    }
+    grouped[groupVal][questionVal]++;
+  });
+
+  // Calculate percentages for each group
+  const result = [];
+  for (const [groupVal, counts] of Object.entries(grouped)) {
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    const label = labelMap[groupVal] || String(groupVal);
+    
+    const groupDict = {
+      attribute: label,
+      values: []
+    };
+
+    // Sort question values to ensure consistent order
+    const sortedValues = Object.keys(counts).sort((a, b) => Number(a) - Number(b));
+    
+    for (const questionVal of sortedValues) {
+      const percent = (counts[questionVal] / total * 100).toFixed(2);
+      groupDict.values.push({
+        range: String(questionVal),
+        value: Number(percent)
+      });
+    }
+    
+    result.push(groupDict);
+  }
+
+  return result;
+}
 
 
 
