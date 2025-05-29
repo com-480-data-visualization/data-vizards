@@ -520,6 +520,16 @@ const codeISOMapping = {
   'AX': 'Åland Islands',
 };
 
+function ReverseCountryISOMapping(object, value) {
+  for (const key in object) {
+    // Ensure the property belongs to the object itself, not inherited
+    if (object.hasOwnProperty(key) && object[key] === value) {
+      return key; // Return the key as soon as a match is found
+    }
+  }
+  return undefined; // Return undefined if the value is not found
+}
+
 const allCountries = am5geodata_worldLow.features.map(f => ({
   id:      f.id,       
   value:   0           
@@ -534,15 +544,14 @@ const ageMap = {
   4: '45-54', 5: '55-64', 6: '65+'
 };
 const religionMap = {
-  0: 'No',
+  0: 'No Religion',
   1: 'Roman Catholic',
   2: 'Protestant',
   3: 'Orthodox',
   4: 'Jew',
   5: 'Muslim',
   6: 'Hindu',
-  7: 'Buddhist',
-  8: 'Other (text)'
+  7: 'Buddhist'
 };
 
 /*
@@ -558,7 +567,7 @@ async function loadData() {
     console.log("Data loaded successfully:", data_answers.slice(0, 5)); // Log first 5 rows
     
     // Transform the data into the format expected by the histogram
-    const surveyDatasets = {
+    surveyDatasets = {
       "Global Survey": transformDataForHistogram(data_answers.filter(q => q.topic !== 'Demographics')),
       "Social capital and trust survey": transformDataForHistogram(data_answers.filter(q => q.topic === 'Social capital and trust')),
       "Ethical values and norms survey": transformDataForHistogram(data_answers.filter(q => q.topic === 'Ethical values and norms')),
@@ -908,9 +917,9 @@ function draw_histogram(containerId, data) {
     .range(['#3a015c', '#caa6dd']); // Range is the color spectrum (from dark purple to light purple)
 
 
-  const maxVal = d3.max(data.flatMap(d => d.values.map(v => v.value)));
+  // Use a fixed domain [0, 100] since values are percentages
   const radius = d3.scaleLinear()
-    .domain([0, maxVal])
+    .domain([0, 100]) 
     .range([innerRadius, outerRadius]);
 
   const angle = d3.scaleBand()
@@ -1053,7 +1062,7 @@ This section contains the different functions that allow the dynamic and interac
 */
 
 
-function create_interactive_globe(container_id){
+function create_interactive_globe(container_id, onCountryClick){
 	return new Promise(resolve => {
 		// --------------------
 		// Interactive Earth Globe Code (amCharts 5)
@@ -1254,6 +1263,13 @@ function create_interactive_globe(container_id){
       const countryName = data.name;     // human-readable name
       
       console.log(`Clicked: ${countryName} (${countryId})`);
+
+      // Get the 3-letter country code using the reverse mapping (assuming countryISOMapping is accessible)
+      const threeLetterCode = getKeyByValue(countryISOMapping, countryId);
+
+      if (threeLetterCode && typeof onCountryClick === 'function') {
+        onCountryClick(threeLetterCode); // Pass the 3-letter code to the callback
+      }
       
       // — example: update your panel with details —
       panelLabel.set("text",
@@ -1557,7 +1573,43 @@ whenDocumentLoaded(async () => {
 	chartDiv.id = "chartdiv";
   chartDiv.classList.add("module");
 	dashboard.appendChild(chartDiv);
-	const globe = await create_interactive_globe("chartdiv");
+
+  let selected_country_code = null; // Variable to hold the currently selected country code for the histogram
+  let questionSelect = null; // Variable to hold the question select element
+  let datasets = { Gender: [], Age: [], Religion: [] }; // Variable to hold the datasets
+
+  // Function to update the histogram based on the selected country and question
+  function updateHistogram() {
+    if (!selected_country_code || !questionSelect) return; // Ensure country and question are selected
+
+    const selected_question = questionSelect.value; // Get the current selected question
+
+    console.log("Debug - Computing datasets with:");
+    console.log("- Country:", selected_country_code);
+    console.log("- Question:", selected_question);
+    console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
+
+    // Dynamically build datasets after a country/question is chosen
+    datasets.Gender = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q260', genderMap);
+    console.log("Debug - Gender dataset:", datasets.Gender);
+
+    datasets.Age = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q287', ageMap);
+    console.log("Debug - Age dataset:", datasets.Age);
+
+    datasets.Religion = computeBinnedDataset(data_clean, selected_country_code, selected_question, 'Q289', religionMap);
+    console.log("Debug - Religion dataset:", datasets.Religion);
+
+    console.log("Debug - Drawing histogram for dataset:", Object.keys(datasets)[0]); // Draw default dataset initially
+    console.log("Debug - Dataset content:", datasets[Object.keys(datasets)[0]]);
+    draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]]); // Draw the default dataset (Gender)
+  }
+
+  // Pass the updateHistogram function to the globe creation
+	const globe = await create_interactive_globe("chartdiv", (countryCode) => {
+      selected_country_code = countryCode; // Update the selected country code
+      updateHistogram(); // Update the histogram
+  });
+
 	// Right Panel
 	const introduction = document.createElement("div");
 	introduction.id = "introduction";
@@ -1567,4 +1619,14 @@ whenDocumentLoaded(async () => {
 	// verify that everything ran smoothly
 	console.log('working');
 });
+
+// Helper function to get object key by value
+function getKeyByValue(object, value) {
+  for (const key in object) {
+    if (object.hasOwnProperty(key) && object[key] === value) {
+      return key;
+    }
+  }
+  return undefined;
+}
 
