@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WVS Explore - Demographics</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="explore.css" />
+
+  <!-- load D3 for CSV loading -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <!-- load the UMD build of Chart.js so "Chart" is global -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <!-- start of JS -->
+  <script type="module" src="main.js"></script>
+  
+</head>
+<body>
+
+  <header>
+    <h1>World Values Survey: Explorer</h1>
+    <p>Welcome to the Explore page! In here, you can find information on the demographic breakdown of survey respondents.</p>
+    <p>You may choose to explore the
+      <a href="#demographics" class="nav-link"><strong>demographics of the respondents</strong></a>,
+      <a href="#country-similarities" class="nav-link"><strong>similarities between countries</strong></a>, or
+      <a href="#individuals-similarities" class="nav-link"><strong>similarities between individuals</strong></a>.
+    </p>
+    <p style="text-align: center;">Enjoy your exploration!</p>
+  </header>
+
+  <section id="demographics">
+    <h2>Demographics</h2>
+    <p>We display below the different categories used for the World Values Survey. Please note that we regrouped some categories to make the chart more readable, 
+      and that some categories were not available for all countries. 
+      
+    </p>
+    <p>Select between Age, Sex, Religion, Education, Economic Class, and Ethnicity.
+      Hover over each slice to see exact percentages.</p>
+    <div id="demo-controls">
+      <label><input type="radio" name="demCategory" value="age" checked> Age</label>
+      <label><input type="radio" name="demCategory" value="sex"> Sex</label>
+      <label><input type="radio" name="demCategory" value="religion"> Religion</label>
+      <label><input type="radio" name="demCategory" value="education"> Education</label>
+      <label><input type="radio" name="demCategory" value="econClass"> Economic class</label>
+      <label><input type="radio" name="demCategory" value="ethnicity"> Ethnicity</label>
+    </div>
+    <canvas id="demoDonut" width="400" height="400"></canvas>
+    <div id="demoDonutLegend"></div>
+    <p>We notice that while the dataset shows relatively balanced distributions 
+      for categories like sex and age groups, some categories like ethnicity show high diversity. 
+      Many ethnic groups were consolidated into an "Others" category due to their smaller representation
+       in the dataset. This consolidation helps maintain readability while acknowledging the rich 
+       diversity of the survey respondents.</p>
+  </section>
+
+  <section id="country-similarities">
+    <h2>Similarities between countries</h2>
+    <p>The chart below shows the similarity between countries based on the average answers to the questions selected for our quiz.
+      These similarities may be due to geographic proximity, or to other factors such as religion,
+      culture, history, etc.
+    </p>
+    <svg id="countryBubbles" width="100%" height="1000" viewBox="0 0 2250 1000"></svg>
+  </section>
+
+  <section id="individuals-similarities"> 
+    <h2>Similarities between individuals</h2>
+      <p>Finally, we wanted to know if any clusters of individuals exist, and if so, what characteristics they share. 
+        We thus present the chart below, where each bubble represents an individual out of 30% of the dataset.
+        Hovering over the bubbles, you can see the demographic characteristics of the individuals, and decide for yourself what explains the clusters!</p>
+    <div id="individual-controls">
+      <p>Choose to highlight individuals by:</p>
+      <label><input type="radio" name="colorBy" value="age" checked> Age</label>
+      <label><input type="radio" name="colorBy" value="sex"> Sex</label>
+      <label><input type="radio" name="colorBy" value="religion"> Religion</label>
+      <label><input type="radio" name="colorBy" value="education"> Education</label>
+      <label><input type="radio" name="colorBy" value="econClass"> Economic class</label>
+      <label><input type="radio" name="colorBy" value="ethnicity"> Ethnicity</label>
+    </div>
+    
+    <svg id="individualsBubbles" width="100%" height="700" viewBox="0 0 2250 700"></svg>
+    <div id="individual-legend" style="margin-top: 1em;"></div>
+    <p>As you can see above, no clear clusters of individuals exist, 
+      and the individuals are spread out across the chart. 
+    </p>
+    <p>This is an important message to keep in mind: people are more than their demographic labels. These charts are a starting point, but every individual brings unique experiences and perspectives that can’t be captured by age, gender, education or background alone.</p>
+  </section>
+
+  <section style="text-align: center;">
+    <p>We hope you enjoyed the World Values Survey quiz we made :)</p>
+  </section>
+  <footer>
+    <p>
+      Website by
+      <a href="https://github.com/JerBaf" target="_blank">Jérémy Baffou</a>,
+      <a href="https://github.com/camicc" target="_blank">Camille Pittet</a>,
+      <a href="https://github.com/renukasinghvirk" target="_blank">Renuka Singh Virk</a>
+    </p>
+    <p class="copyright">
+      Copyright &copy; DataVizards Team (COM-480) 2025. All Rights Reserved
+    </p>
+  </footer>
+
+  <button id="scrollTopBtn" title="Back to top" aria-label="Back to top">
+    &#8679;
+  </button>
+
+  <script>
+    document.getElementById('scrollTopBtn').onclick = function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  </script>
+</body>
+</html>

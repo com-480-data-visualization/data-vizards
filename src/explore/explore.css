@@ -1,0 +1,208 @@
+html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: "Charter", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #161528;
+    color: #fff;
+  }
+  
+  header {
+    text-align: left;
+    padding: 2rem 1rem;
+    background: #161528;
+    color: #fff;
+  }
+  
+  section {
+    padding: 1rem 1rem;
+  }
+  
+  h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  
+  #demo-controls {
+    margin-bottom: 1rem;
+  }
+  
+  #demo-controls label {
+    margin-right: 1em;
+    font-size: 0.9rem;
+  }
+  
+  canvas#demoDonut {
+    display: block;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 400px;
+  }
+  
+  .bubble-tooltip {
+    font-family: 'Charter', serif;
+    font-size: 16px;
+    z-index: 10;
+  }
+  
+  header h1 {
+    font-size: 4.5em;
+    margin-bottom: 0.5em;
+  }
+  header p {
+    font-size: 2.2em;
+    margin-bottom: 0.5em;
+  }
+  section h2 {
+    font-size: 3.2em;
+    margin: 1em 0;
+  }
+  section p {
+    font-size: 2.2em;
+    margin-bottom: 0.5em;
+  }
+  #demo-controls label, #individual-controls label {
+    font-size: 1.8em;
+    margin-right: 1em;
+    cursor: pointer;
+  }
+  #individual-controls p {
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
+  }
+  input[type="radio"] {
+    transform: scale(1.5);
+    margin-right: 0.5em;
+  }
+  .question-controls {
+    display: flex;
+    gap: 2em;
+    margin: 1em 0;
+  }
+  .question-controls select {
+    font-size: 1.5em;
+    padding: 0.5em;
+    min-width: 200px;
+  }
+  .group-controls {
+    margin: 1em 0;
+  }
+  .group-controls select {
+    font-size: 1.5em;
+    padding: 0.5em;
+    min-width: 200px;
+  }
+  #individual-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em;
+    justify-content: center;
+    margin-top: 1em;
+    padding: 1em;
+    background: #161528;
+    border-radius: 8px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+  }
+  .legend-color {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid white;
+  }
+  .legend-label {
+    font-size: 1.5em;
+    color: white;
+  }
+
+  #demoDonut {
+    margin-bottom: 2em;
+    width: 100%;
+    height: 800px;
+  }
+  .donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 2em;
+    margin-bottom: 1em;
+  }
+  
+  footer p {
+    color: #fff;
+    font-size: 2em;
+    font-family: "Charter", serif;
+    margin: 0;
+  }
+  
+  footer a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: bold;
+    transition: color 0.2s;
+  }
+  
+  footer a:hover {
+    color: #f8b5e8; 
+  }
+  footer .copyright {
+    margin-top: 1em;
+    font-size: 1.4em;
+    letter-spacing: 0.15em;
+    color: #fff;
+    font-family: "Charter", serif;
+    text-align: center;
+  }
+  
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.2s;
+    padding: 0 0.2em;
+  }
+  
+  .nav-link:hover {
+    color: #f8b5e8;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 1000;
+    background: #fff;
+    color: #222;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 2em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #scrollTopBtn:hover {
+    background: #743dff;
+    color: #fff;
+    transform: scale(1.08);
+  }
