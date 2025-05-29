@@ -994,11 +994,19 @@ function draw_histogram(containerId, data) {
 
 function computeBinnedDataset(data_clean, selected_country, selected_question, category_key, labelMap = {}) {
   // Filter data for the selected country and ensure all required columns have positive values
-  const valid = data_clean.filter(row => 
-    row.B_COUNTRY_ALPHA === selected_country &&
-    row[selected_question] > 0 &&
-    row[category_key] > 0
-  );
+  const valid = data_clean.filter(row => {
+    const countryMatch = row.B_COUNTRY_ALPHA === selected_country;
+    const questionMatch = row[selected_question] > 0;
+    let categoryMatch = row[category_key] > 0;
+
+    // Special filtering for Religion (Q289) to include keys 0 through 7
+    if (category_key === 'Q289') {
+      const religionValue = Number(row[category_key]);
+      categoryMatch = religionValue >= 0 && religionValue <= 7;
+    }
+
+    return countryMatch && questionMatch && categoryMatch;
+  });
 
   // Group the data by category and question value
   const grouped = {};
@@ -1018,9 +1026,16 @@ function computeBinnedDataset(data_clean, selected_country, selected_question, c
   // Calculate percentages for each group
   const result = [];
   for (const [groupVal, counts] of Object.entries(grouped)) {
+    // Ensure the groupVal is within the desired range for Religion before processing
+    if (category_key === 'Q289' && (Number(groupVal) < 0 || Number(groupVal) > 7)) {
+        continue; // Skip if it's Religion and outside the desired keys
+    }
+
     const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
-    const label = labelMap[groupVal] || String(groupVal);
     
+    // Use the label map, falling back to string value if not found
+    const label = labelMap[groupVal] !== undefined ? labelMap[groupVal] : String(groupVal);
+
     const groupDict = {
       attribute: label,
       values: []
@@ -1033,7 +1048,7 @@ function computeBinnedDataset(data_clean, selected_country, selected_question, c
       const percent = (counts[questionVal] / total * 100).toFixed(2);
       groupDict.values.push({
         range: String(questionVal),
-        value: Number(percent)
+        value: Number(percent) // Convert to number
       });
     }
     
