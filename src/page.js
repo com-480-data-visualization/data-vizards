@@ -606,7 +606,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 1) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 5) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {

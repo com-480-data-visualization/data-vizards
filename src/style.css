@@ -22,10 +22,10 @@ body {
 	align-content: center;
 
 	/* background behind the plot */
-	background: rgb(38, 43, 52);
+	background: #20232a;
 
 	/* default text */
-	font-family: sans-serif;
+	font-family: 'Charter', dserif;
 	font-size: 1.1rem;
 }
 
