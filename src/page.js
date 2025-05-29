@@ -932,11 +932,11 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("width", 500)
-    .attr("height", 500);
+    .attr("width", 600)
+    .attr("height", 600);
 
-  const width = 500;
-  const height = 500;
+  const width = 600;
+  const height = 600;
   const innerRadius = 0;
   const outerRadius = 100;
 
@@ -992,7 +992,7 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
   });
 
   // Add attribute labels (e.g., Gender, Age, Religion)
-  const labelOffset = outerRadius + 20; // Adjust label offset
+  const labelOffset = outerRadius + 40; // Increased label offset for better spacing
   g.selectAll("text.attribute-label") // Changed class name for clarity
     .data(data)
     .enter()
@@ -1014,7 +1014,7 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
   // Use the unique ranges for the legend and map to descriptive text if available
   uniqueRanges.forEach((range, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 40}, 0)`); // Adjust spacing between legend items
+      .attr("transform", `translate(${i * 120}, 0)`); // Adjust spacing between legend items
 
     // Colored rectangle
     legendItem.append("rect")
