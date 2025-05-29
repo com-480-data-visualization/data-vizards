@@ -1662,23 +1662,8 @@ function create_introduction(container_id,globe){
   const introText = [
     "Hey there!  Welcome to the World Values Quiz!",
     "Have you ever wondered whether you'd get along with people",
-    "if you moved abroad? We have—and that's exactly where this",
-    "project began.",
-    "Our aim was to quantify how well someone might fit in when",
-    "they relocate to another country.",
-    "So we rolled up our sleeves and dove into the World Values",
-    "Survey, mining questions about trust, tolerance,",
-    'and friendship to calculate a "values compatibility" score',
-    "for every nation on the map.",
-    "But we didn't stop at a single number. We wanted you to",
-    "explore how different groups see the world, too—a woman",
-    "moving abroad might care most about what other women",
-    "think, just as age, religion, economic class, and more",
-    "can shape your experience. That's why we give you the",
-    "option to choose from multiple survey filters, view an",
-    "interactive map of your best-match countries, and then",
-    "drill down into the detailed responses of each country and",
-    "demographic group."
+    "if you moved abroad?",
+    "Find out with our quiz!",
   ].join("\n");
 
   const formatedText = introText.split("\n");
