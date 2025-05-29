@@ -1647,78 +1647,81 @@ function create_section_selector(container_id,globe){
 }
 
 function create_introduction(container_id,globe){
-	const svg = d3.select("#"+container_id)
-	  .append("svg")
-	  .attr("width", 500)
-	  .attr("height", 500);
+  const svg = d3.select("#"+container_id)
+    .append("svg")
+    .attr("width", 500)
+    .attr("height", 500);
 
-	const introText = [
-	  "Hello!  Welcome in the Data-Vizards lair!",
-	  "Have you ever wondered whether you'd get along with people if you",
-	  "moved abroad? We have—and that's exactly where this project began.",
-	  "Our aim was to quantify how well someone might fit in when they",
-	  "relocate to another country.",
-	  "So we rolled up our sleeves and dove into the World Values Survey,",
-	  "mining questions about trust, tolerance, and friendship to calculate a",
-	  '"cultural compatibility" score for every nation on the map.',
-	  "But we didn't stop at a single number. We wanted you to explore how",
-	  "different groups see the world, too—a woman moving abroad might",
-	  "care most about what other women think, just as age, religion,",
-	  "economic class, and more can shape your experience.",
-	  "That's why we give you the option to choose from multiple survey",
-	  "filters, view an interactive map of your best-match countries, and then",
-	  "drill down into the detailed responses of each country and",
-	  "demographic group."
-	].join("\n");
+  const introText = [
+    "Hello!  Welcome in the Data-Vizards lair!",
+    "Have you ever wondered whether you'd get along with people if you",
+    "moved abroad? We have—and that's exactly where this project began.",
+    "Our aim was to quantify how well someone might fit in when they",
+    "relocate to another country.",
+    "So we rolled up our sleeves and dove into the World Values Survey,",
+    "mining questions about trust, tolerance, and friendship to calculate a",
+    '"cultural compatibility" score for every nation on the map.',
+    "But we didn't stop at a single number. We wanted you to explore how",
+    "different groups see the world, too—a woman moving abroad might",
+    "care most about what other women think, just as age, religion,",
+    "economic class, and more can shape your experience.",
+    "That's why we give you the option to choose from multiple survey",
+    "filters, view an interactive map of your best-match countries, and then",
+    "drill down into the detailed responses of each country and",
+    "demographic group."
+  ].join("\n");
 
-	const formatedText = introText.split("\n");
+  const formatedText = introText.split("\n");
 
-	const text = svg.append("text")
-	  .attr("x", 20)
-	  .attr("y", 20)
-	  .attr("class", "intro_text")
-	  .attr('fill','white')
-	  .attr('text-align','center')
+  const text = svg.append("text")
+    .attr("x", 20)
+    .attr("y", 20)
+    .attr("class", "intro_text")
+    .attr('fill','white')
+    .attr('text-align','center');
 
-	text.selectAll("tspan")
-	  .data(formatedText)
-	  .enter().append("tspan")
-	  .attr("x", text.attr("x"))           // reset x each line
-	  .attr("dy", (d,i) => i === 0 ? 0 : "1.2em")  // first line at y, others shifted
-	  .text(d => d);
+  text.selectAll("tspan")
+    .data(formatedText)
+    .enter().append("tspan")
+      .attr("x", text.attr("x"))
+      .attr("dy", (d,i) => i === 0 ? 0 : "1.2em")
+      .text(d => d);
 
-	const btnGroup = svg.append("g")
-	  .attr("transform", "translate(400,400)")
-	  .style("cursor", "pointer")
-	  .on("click", () => console.log("SVG button clicked!"));
-	
-	btnGroup.append("rect")
-	  .attr("class", "btn-rect")
-	  .attr("width", 100)
-	  .attr("height", 40)
-	  .attr('fill', 'grey')
-	  .attr("rx", 5)    // rounded corners
-	  .on("mouseover", function() { d3.select(this).attr("fill", "white"); })
-	  .on("mouseout",  function() { d3.select(this).attr("fill", "grey"); })
-	  .on("click", (event, d) => {
-		const oldDiv = document.getElementById(container_id);
-		const parent = oldDiv.parentNode;
-		const newDiv = document.createElement("div");
-		newDiv.id = "sectionSelector";
-		newDiv.classList.add("module");
-		parent.replaceChild(newDiv, oldDiv);
-		d3.select(container_id).remove();
-		create_section_selector("sectionSelector",globe);
-	});
+  const btnGroup = svg.append("g")
+    .attr("transform", "translate(400,400)")
+    .style("cursor", "pointer");
 
-	btnGroup.append("text")
-	  .attr("class", "btn-txt")
-	  .attr("x", 50)    // half of 100
-	  .attr("y", 25)    // a bit more than half of 40
-	  .attr("text-anchor", "middle")
-	  .attr("dominant-baseline", "middle")
-	  .text("Start");
+  // Define the start behavior in a separate function
+  const startSurvey = () => {
+    const oldDiv = document.getElementById(container_id);
+    const parent = oldDiv.parentNode;
+    const newDiv = document.createElement("div");
+    newDiv.id = "sectionSelector";
+    newDiv.classList.add("module");
+    parent.replaceChild(newDiv, oldDiv);
+    d3.select("#" + container_id).remove();
+    create_section_selector("sectionSelector", globe);
+  };
 
+  btnGroup.append("rect")
+    .attr("class", "btn-rect")
+    .attr("width", 100)
+    .attr("height", 40)
+    .attr('fill', 'grey')
+    .attr("rx", 5)
+    .on("mouseover", function() { d3.select(this).attr("fill", "white"); })
+    .on("mouseout",  function() { d3.select(this).attr("fill", "grey"); })
+    .on("click", startSurvey);
+
+  btnGroup.append("text")
+    .attr("class", "btn-txt")
+    .attr("x", 50)
+    .attr("y", 25)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .text("Start")
+    .style("pointer-events", "all")
+    .on("click", startSurvey);
 }
 
 // Main Function
