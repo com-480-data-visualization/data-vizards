@@ -373,7 +373,7 @@ const codeISOMapping = {
   'IS': 'Iceland',
   'IN': 'India',
   'ID': 'Indonesia',
-  'IR': 'Iran (Islamic Republic of)',
+  'IR': 'Iran',
   'IQ': 'Iraq',
   'IE': 'Ireland',
   'IM': 'Isle of Man',
@@ -535,7 +535,7 @@ const allCountries = am5geodata_worldLow.features.map(f => ({
   value:   0           
 }));
 
-const Exploration_questions = {'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'How important is religion?': 'Q6', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75','Should global orgs prioritize effectiveness or democracy?': 'Q90'}
+const Exploration_questions = {'How important is religion?': 'Q6', 'How important is family?': 'Q1', 'How important are friends?': 'Q2', 'How important is leisure time?': 'Q3', 'How important is politics?': 'Q4', 'How important is work?': 'Q5', 'Men make better political leaders than women – agree?': 'Q29', 'Having children is a duty to society – agree?': 'Q37', 'Work should come before free time – agree?': 'Q41', 'Trust in your family?': 'Q59', 'Trust in your neighborhood?': 'Q60', 'Trust in other nationalities?': 'Q63', 'Confidence in universities?': 'Q75','Should global orgs prioritize effectiveness or democracy?': 'Q90'}
 
 // Mapping objects for histogram data
 const genderMap = { 1: "Male", 2: "Female" };
@@ -613,7 +613,7 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
     // For Global, exclude questions from the Demographics topic.
     filteredQuestions = dfMetaAnswers.filter(question => question.topic !== 'Demographics');
   } else {
-    filteredQuestions = dfMetaAnswers.filter(question => question.topic === selectedTopic);
+    filteredQuestions = dfMetaAnswers.filter(question => question.topic === selectedTopic);s
   }
   console.log("Filtered questions:", filteredQuestions);
 
@@ -960,8 +960,16 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
     '#f6c90e', // yellow
     '#ff8811', // orange
     '#ff4d6d', // red
-    '#9d4edd'  // violet
+    '#9d4edd',  // violet
+    '#00b7c2', // teal/cyan — pairs beautifully with purple and green
+    '#ff66c4'  // bubblegum pink — adds a fresh, vibrant contrast to blue and red
   ];
+
+
+
+
+
+
 
   const groupColor = d3.scaleOrdinal()
     .domain(data.map(d => d.attribute))
@@ -1371,7 +1379,7 @@ function create_interactive_globe(container_id, onCountryClick){
       */
       // 2) set panel text
       panelLabel.set("text", 
-        `Best Match:\n${bestCountry.name}\nScore: ${bestCountry.score.toFixed(2)}`
+        `Best Match:\n${bestCountry.name}\nScore: ${compute_final_score(bestCountry.score.toFixed(2))}%`
       );
       // 3) fade panel in
       panel.animate({
@@ -1386,6 +1394,7 @@ function create_interactive_globe(container_id, onCountryClick){
     polygonSeries.mapPolygons.template.events.on("click", ev => {
       // ev.target is the Sprite that was clicked
       const data = ev.target.dataItem.dataContext;
+      const contryFinalScore = (data.value * 100).toFixed(2);
       const countryId   = data.id;       // your alpha-2 code
       const countryName = data.name;     // human-readable name
       
@@ -1400,7 +1409,7 @@ function create_interactive_globe(container_id, onCountryClick){
       
       // — example: update your panel with details —
       panelLabel.set("text",
-        `Country:\n${countryName}\nCode: ${countryId}`
+        `${countryName}\nScore: ${contryFinalScore}%`
       );
       panel.current_country = data.id
     });
