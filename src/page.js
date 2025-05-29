@@ -658,6 +658,44 @@ function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nb
   return { selectedQuestions, validAnswers };
 }
 
+// Shared variable across make_histograms and interactive globe
+let selected_country_code = null;
+
+function make_histograms(selectedQuestions, data_clean, data_answers) {
+  if (!selected_country_code) {
+    console.warn("No country selected.");
+    return;
+  }
+
+  // Get mapping from first selected question
+  const questionIndex = selectedQuestions[0].index;
+  const questionData = data_answers.find(row => row.index === questionIndex);
+
+  let possibleAnswersMapping = {};
+  if (questionData && questionData.possible_answers) {
+    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+    for (const label in rawMapping) {
+      possibleAnswersMapping[Number(rawMapping[label])] = label;
+    }
+  }
+
+  // Recompute datasets with the new country
+  datasets.Gender = computeBinnedDataset(data_clean, selected_country_code, questionIndex, 'Q260', genderMap);
+  datasets.Age = computeBinnedDataset(data_clean, selected_country_code, questionIndex, 'Q287', ageMap);
+  datasets.Religion = computeBinnedDataset(data_clean, selected_country_code, questionIndex, 'Q289', religionMap);
+
+  selectedDataset = "Gender";
+
+  // Reset button highlights
+  Array.from(buttonsContainer.children).forEach(b => {
+    b.style.opacity = (b.textContent === "Gender") ? "1" : "0.7";
+  });
+
+  // Redraw histogram
+  draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
+}
+
+
 async function run_quiz(topic, containerId, globe) {
   // Load data and select questions
   const { data_clean, data_answers, surveyDatasets } = await loadData();
