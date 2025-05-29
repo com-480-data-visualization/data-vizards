@@ -54,6 +54,7 @@ body {
 }
   
 #main-title {
+	font-family: 'Charter', serif;
 	font-size: 1.5rem;
 	font-weight: bold;
 	color: #fff;
@@ -64,6 +65,8 @@ body {
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	gap: 1rem;
 	padding: 0 1rem 1rem;
+	width: 100%;
+	margin: auto;
   }
   .module,
   #chartdiv,
@@ -79,18 +82,21 @@ body {
   }
 
   #module-title {
+	font-family: 'Charter', serif;
 	width: 100%;
 	text-align: center;
 	padding-top: 20px;
   }
   
   #module-title .main-title {
+	font-family: 'Charter', serif;
 	font-size: 24px;
 	font-weight: bold;
 	color: white;
   }
   
   #module-title .module-subtitle {
+	font-family: 'Charter', serif;
 	font-size: 16px;
 	margin-top: 4px;
 	color: #ccc;
@@ -99,3 +105,4 @@ body {
 svg {
 	margin: 1rem;
 }
+

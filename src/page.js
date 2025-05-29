@@ -606,7 +606,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 5) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 1) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {
@@ -708,12 +708,15 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
   dropdownContainer.id = "dropdown-container";
   dropdownContainer.style.margin = "0";
   dropdownContainer.style.marginBottom = "24px";
+  dropdownContainer.style.fontFamily = "Charter, serif";
 
   const questionSelect = document.createElement("select");
   questionSelect.id = "question-select";
   questionSelect.style.padding = "10px";
   questionSelect.style.fontSize = "16px";
   questionSelect.style.marginRight = "0";
+  questionSelect.style.fontFamily = "Charter, serif";
+  questionSelect.style.backgroundColor = "rgba(255, 255, 255, 0.72)";
 
   Object.keys(Exploration_questions).forEach((key) => {
     const option = document.createElement("option");
@@ -783,8 +786,9 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
     btn.style.fontSize = "16px";
     btn.style.border = "none";
     btn.style.borderRadius = "6px";
-    btn.style.backgroundColor = "#6c63ff";
+    btn.style.backgroundColor = "rgb(13, 13, 19)";
     btn.style.color = "white";
+    btn.style.fontFamily = "Charter, serif";
     btn.style.cursor = "pointer";
     btn.style.opacity = key === selectedDataset ? "1" : "0.7";
     btn.onclick = () => {
@@ -1006,8 +1010,10 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("width", 600)
-    .attr("height", 600);
+    .attr("viewBox", "0 0 600 600")
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto");
 
   const width = 600;
   const height = 600;
@@ -1019,15 +1025,15 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   // Assign each group a base color from a palette
   const colorPalette = [
-    '#3a015c', // purple
-    '#2b59c3', // blue
-    '#16c172', // green
-    '#f6c90e', // yellow
-    '#ff8811', // orange
-    '#ff4d6d', // red
-    '#9d4edd',  // violet
-    '#00b7c2', // teal/cyan — pairs beautifully with purple and green
-    '#ff66c4'  // bubblegum pink — adds a fresh, vibrant contrast to blue and red
+    'rgb(255, 117, 253)', // purple
+    'rgb(30, 101, 233)', // blue
+    'rgb(128, 78, 255)', // green
+    ' #b23a9a', // yellow
+    ' #2e0854', // orange
+    ' #8e44ad', // red
+    'rgb(184, 19, 105)',  // violet
+    'rgb(57, 23, 70)', // teal/cyan — pairs beautifully with purple and green
+    'rgb(82, 135, 248)'  // bubblegum pink — adds a fresh, vibrant contrast to blue and red
   ];
 
 
@@ -1343,13 +1349,15 @@ function create_interactive_globe(container_id, onCountryClick){
 
     heatLegend.startLabel.setAll({
       fill: am5.color(0xffffff),     
-      fontSize: "0.75em",            
+      fontSize: "0.75em", 
+      fontFamily: "Charter, serif",           
       fontWeight: "500"              
     });
 
     heatLegend.endLabel.setAll({
       fill: am5.color(0xffffff),     
-      fontSize: "0.75em",            
+      fontSize: "0.75em",   
+      fontFamily: "Charter, serif",         
       fontWeight: "500"              
     });
 
@@ -1408,7 +1416,7 @@ function create_interactive_globe(container_id, onCountryClick){
         paddingRight: 12,
         background: am5.RoundedRectangle.new(root, {
           fill: am5.color(0xffffff),
-          fillOpacity: 0.9,
+          fillOpacity: 0.7,
           cornerRadius: 8
         }),
         opacity: 0 // start hidden
@@ -1418,11 +1426,12 @@ function create_interactive_globe(container_id, onCountryClick){
     
     const panelLabel = panel.children.push(
       am5.Label.new(root, {
-        text: "",               
-        fontSize: 14,
+        text: "",   
+        fontFamily: "Charter, serif",            
+        fontSize: 16,
         fill: am5.color(0x000000),
         width: am5.percent(100),    
-        textAlign: "center",        
+        textAlign: "left",        
         x: am5.percent(50),         
         centerX: am5.percent(50)    
           })
@@ -1495,7 +1504,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
   // Define layout constants.
   const width = 900 ,
         height = 500,
-        barHeight = 7,
+        barHeight = 17,
         offsetLeft = 50,
         offsetTop = 80,
         barGap = 30;
@@ -1567,7 +1576,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
       .attr("y", (d, i) => offsetTop + i * (barHeight + barGap) + (barHeight / 2) + 1)
       .attr("alignment-baseline", "middle")
       .attr("fill", "#ccc")
-      .style("font-size", "12px")
+      .style("font-size", "18px")
       .text(d => d[0]);
 
   // Append the numeric values on the left of each bar.
@@ -1599,11 +1608,11 @@ function create_section_selector(container_id,globe){
 	.insert("div", ":first-child")
 	.attr("id", "module-title")
 	.style("width", "100%")             // Ensure full width if needed
-	.style("text-align", "center")      // Center the text horizontally
+	.style("text-align", "left")       // Center the text left
 	.style("padding-top", "20px")       // Adjust vertical position
 	.style("color", "white")            // Set text color to white
 	.style("font-size", "24px")         // Increase the font size
-	.text("Select Your Topic");
+	.text("Select a Survey");
 
 	// Create an SVG
 	const svg = d3.select("#"+container_id)
@@ -1653,20 +1662,23 @@ function create_introduction(container_id,globe){
     .attr("height", 500);
 
   const introText = [
-    "Hello!  Welcome in the Data-Vizards lair!",
-    "Have you ever wondered whether you'd get along with people if you",
-    "moved abroad? We have—and that's exactly where this project began.",
-    "Our aim was to quantify how well someone might fit in when they",
-    "relocate to another country.",
-    "So we rolled up our sleeves and dove into the World Values Survey,",
-    "mining questions about trust, tolerance, and friendship to calculate a",
-    '"cultural compatibility" score for every nation on the map.',
-    "But we didn't stop at a single number. We wanted you to explore how",
-    "different groups see the world, too—a woman moving abroad might",
-    "care most about what other women think, just as age, religion,",
-    "economic class, and more can shape your experience.",
-    "That's why we give you the option to choose from multiple survey",
-    "filters, view an interactive map of your best-match countries, and then",
+    "Hey there!  Welcome to the World Values Quiz!",
+    "Have you ever wondered whether you'd get along with people",
+    "if you moved abroad? We have—and that's exactly where this",
+    "project began.",
+    "Our aim was to quantify how well someone might fit in when",
+    "they relocate to another country.",
+    "So we rolled up our sleeves and dove into the World Values",
+    "Survey, mining questions about trust, tolerance,",
+    'and friendship to calculate a "values compatibility" score',
+    "for every nation on the map.",
+    "But we didn't stop at a single number. We wanted you to",
+    "explore how different groups see the world, too—a woman",
+    "moving abroad might care most about what other women",
+    "think, just as age, religion, economic class, and more",
+    "can shape your experience. That's why we give you the",
+    "option to choose from multiple survey filters, view an",
+    "interactive map of your best-match countries, and then",
     "drill down into the detailed responses of each country and",
     "demographic group."
   ].join("\n");
@@ -1678,7 +1690,7 @@ function create_introduction(container_id,globe){
     .attr("y", 20)
     .attr("class", "intro_text")
     .attr('fill','white')
-    .attr('text-align','center');
+    .attr('text-align','left');
 
   text.selectAll("tspan")
     .data(formatedText)
@@ -1703,7 +1715,7 @@ function create_introduction(container_id,globe){
     create_section_selector("sectionSelector", globe);
   };
 
-  btnGroup.append("rect")
+  const rect = btnGroup.append("rect")
     .attr("class", "btn-rect")
     .attr("width", 100)
     .attr("height", 40)
@@ -1716,11 +1728,13 @@ function create_introduction(container_id,globe){
   btnGroup.append("text")
     .attr("class", "btn-txt")
     .attr("x", 50)
-    .attr("y", 25)
+    .attr("y", 20)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
     .text("Start")
     .style("pointer-events", "all")
+    .on("mouseover", () => rect.attr("fill", "white"))
+    .on("mouseout", () => rect.attr("fill", "grey"))
     .on("click", startSurvey);
 }
 
