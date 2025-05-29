@@ -924,7 +924,7 @@ async function run_quiz(topic, containerId, globe) {
       distanceByCountry[c].totalDistance = distanceByCountry[c].total / distanceByCountry[c].count;
     }
 
-    console.log("dist_by_country", distanceByCountry);
+    console.log("Debug: distanceByCountry object after calculation:", distanceByCountry);
 
     // Derive the per-country heatmap score
     const [minScore, maxScore] = ((v) => [Math.min(...v), Math.max(...v)])(
@@ -966,7 +966,19 @@ async function run_quiz(topic, containerId, globe) {
   bestMatchText.style.color = "white"; // Set text color
   bestMatchText.style.fontSize = "18px";
   bestMatchText.style.marginBottom = "20px";
-  bestMatchText.innerHTML = `<h2>Best Match: ${codeISOMapping[countryISOMapping[closestCountry.country]]}</h2><p>Score: ${compute_final_score(closestCountry.totalDistance)}%</p>`;
+
+  if (closestCountry && closestCountry.country) {
+    bestMatchText.innerHTML = `<h2>Best Match: ${codeISOMapping[countryISOMapping[closestCountry.country]]}</h2><p>Score: ${compute_final_score(closestCountry.totalDistance)}%</p>`;
+    // Show best match on the globe panel only if a match was found
+    globe.chart.showBestMatch({
+      name: codeISOMapping[countryISOMapping[closestCountry.country]],
+      score: closestCountry.totalDistance
+    });
+  } else {
+    bestMatchText.innerHTML = `<h2>No Best Match Found</h2><p>Could not calculate a compatibility score.</p>`;
+    console.warn("No closest country found after quiz.");
+  }
+
   quizResultsPanel.appendChild(bestMatchText);
 
   // Replace the quiz container element with the quiz results panel
@@ -975,12 +987,6 @@ async function run_quiz(topic, containerId, globe) {
   } else {
       console.error("Could not find quiz container element or its parent to replace.");
   }
-
-  // Show best match on the globe panel
-  globe.chart.showBestMatch({
-    name: codeISOMapping[countryISOMapping[closestCountry.country]],
-    score: closestCountry.totalDistance
-  });
 
   console.log("Debug - Selected Country:", closestCountry.country);
   console.log("Debug - First few rows of data_clean:", data_clean.slice(0, 3));
