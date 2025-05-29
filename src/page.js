@@ -819,9 +819,21 @@ async function run_quiz(topic, containerId, globe) {
   const selected_country = closestCountry.country;  // This is already in the correct format (3-letter code)
   const selected_question = questionSelect.value;
 
+  // Find the possible answers string for the selected question
+  const questionData = data_answers.find(row => row.index === selected_question);
+  let possibleAnswersMapping = {};
+  if (questionData && questionData.possible_answers) {
+    // Parse and invert the possible_answers string
+    const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+    for (const text in rawMapping) {
+      possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+    }
+  }
+
   console.log("Debug - Computing datasets with:");
   console.log("- Country:", selected_country);
   console.log("- Question:", selected_question);
+  console.log("- Possible Answers Mapping:", possibleAnswersMapping);
   console.log("- Category keys:", { gender: 'Q260', age: 'Q287', religion: 'Q289' });
 
   // Dynamically build datasets after a country/question is chosen
@@ -867,32 +879,56 @@ async function run_quiz(topic, containerId, globe) {
   function updateHistogram() {
     console.log("Debug - Drawing histogram for dataset:", selectedDataset);
     console.log("Debug - Dataset content:", datasets[selectedDataset]);
-    draw_histogram("histogram-container", datasets[selectedDataset]);
+    draw_histogram("histogram-container", datasets[selectedDataset], possibleAnswersMapping);
   }
 
   // Dropdown event
   questionSelect.addEventListener("change", () => {
     const newQuestion = questionSelect.value;
     console.log("Debug - Question changed to:", newQuestion);
+
+    // Find the possible answers mapping for the new question
+    const questionData = data_answers.find(row => row.index === newQuestion);
+    let possibleAnswersMapping = {};
+    if (questionData && questionData.possible_answers) {
+        const rawMapping = JSON.parse(fixMappingString(questionData.possible_answers));
+        for (const text in rawMapping) {
+            possibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+        }
+    }
+    console.log("Debug - New Possible Answers Mapping:", possibleAnswersMapping);
+
     datasets.Gender = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q260', genderMap);
     datasets.Age = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q287', ageMap);
     datasets.Religion = computeBinnedDataset(data_clean, selected_country, newQuestion, 'Q289', religionMap);
-    updateHistogram();
+    // Pass the updated possibleAnswersMapping to updateHistogram
+    updateHistogram(); // updateHistogram will now use the latest selected_question and generate the mapping internally
   });
 
   // Initial draw
   console.log("Debug - Performing initial histogram draw");
-  updateHistogram();
+  // Find the initial possible answers mapping
+  const initialQuestionData = data_answers.find(row => row.index === questionSelect.value);
+    let initialPossibleAnswersMapping = {};
+    if (initialQuestionData && initialQuestionData.possible_answers) {
+        const rawMapping = JSON.parse(fixMappingString(initialQuestionData.possible_answers));
+        for (const text in rawMapping) {
+            initialPossibleAnswersMapping[rawMapping[text]] = text; // Create mapping from number to text
+        }
+    }
+  // Pass the initial possibleAnswersMapping to draw_histogram
+  draw_histogram("histogram-container", datasets[Object.keys(datasets)[0]], initialPossibleAnswersMapping);
 }
-
 
 function compute_final_score(dist){
   return(((1 - dist) * 100).toFixed(2))
 }
 
-function draw_histogram(containerId, data) {
+function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
   const container = document.getElementById(containerId);
   container.innerHTML = ""; // Clear existing bars
+  console.log("Drawing histogram for data:", data);
+  console.log("Drawing histogram with possible answers mapping:", possibleAnswersMapping);
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
@@ -947,6 +983,10 @@ function draw_histogram(containerId, data) {
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.5);
 
+      // Add tooltip for each arc
+      g.append("title")
+        .text(`${group.attribute}: ${possibleAnswersMapping[d.range] || d.range} - ${d.value}%`);
+
       cumulative += d.value; // Accumulate percentage for stacking
     });
   });
@@ -962,7 +1002,7 @@ function draw_histogram(containerId, data) {
     .attr("y", d => Math.sin(angle(d.attribute) + angle.bandwidth() / 2 - Math.PI / 2) * labelOffset)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
-    .text(d => d.attribute)
+    .text(d => d.attribute) // Display the attribute name (e.g., Male, 15-24, Roman Catholic)
     .style("font-size", "12px")
     .style("fill", "white");
 
@@ -971,7 +1011,7 @@ function draw_histogram(containerId, data) {
     .attr("class", "legend")
     .attr("transform", `translate(${width / 2 - 150}, ${height - 30})`); // Adjust position for potentially more items
 
-  // Use the unique ranges for the legend
+  // Use the unique ranges for the legend and map to descriptive text if available
   uniqueRanges.forEach((range, i) => {
     const legendItem = legend.append("g")
       .attr("transform", `translate(${i * 40}, 0)`); // Adjust spacing between legend items
@@ -986,7 +1026,7 @@ function draw_histogram(containerId, data) {
     legendItem.append("text")
       .attr("x", 20)
       .attr("y", 12)
-      .text(range) // Display the numerical range
+      .text(possibleAnswersMapping[range] || range) // Display descriptive text from mapping or the numerical range
       .style("fill", "#fff")
       .style("font-size", "12px");
   });
@@ -1057,10 +1097,6 @@ function computeBinnedDataset(data_clean, selected_country, selected_question, c
 
   return result;
 }
-
-
-
-
 
 function fixMappingString(mapping) {
   // Convert keys enclosed in single quotes to double quotes.
