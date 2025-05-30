@@ -1481,6 +1481,18 @@ function create_interactive_globe(container_id, onCountryClick){
       centerY: am5.percent(50)
     });
 
+    /* animation */
+    let lastTs = performance.now();
+    function rotateLoop(ts) {
+      const delta = ts - lastTs;
+      lastTs = ts;
+      // rotate 360° in 30 000 ms ⇒ degreesPerMs = 360/30000
+      chart.set("rotationX", chart.get("rotationX") + (360 / 30000) * delta);
+      requestAnimationFrame(rotateLoop);
+    }
+    requestAnimationFrame(rotateLoop);
+    console.log('animation')
+
     resolve({ root, chart, polygonSeries, panel, panelLabel });
 		});
   });
