@@ -45,7 +45,7 @@ const ethnicityMap = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const data = await d3.csv('../../data/DF_Clean.csv', d3.autoType);
+    const data = await d3.csv('../../data/subset_df_clean.csv', d3.autoType);
 
     const data_ethnicity = await d3.csv('../../data/Q290_with_categories.csv', d3.autoType);
 
