@@ -52,7 +52,7 @@ The related work is shown in the corresponding section of the [pdf](./milestones
 
 • [Process book](process_book_final.pdf) 
 
-• [Screencast](#video)
+• [Screencast](https://drive.google.com/file/d/1ELtrhZMdeFK9eppb-YhUbtBR38K36Irc/view?usp=sharing)
 
 ## Late policy
 
