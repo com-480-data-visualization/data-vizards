@@ -37,7 +37,7 @@ export const countryNameMap = {
   MDV: 'Maldives',
   MEX: 'Mexico',
   MNG: 'Mongolia',
-  MAR: 'Morocco',
+  MOR: 'Morocco',
   NLD: 'Netherlands',
   NIC: 'Nicaragua',
   NGA: 'Nigeria',
