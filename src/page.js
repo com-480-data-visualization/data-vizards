@@ -1688,9 +1688,16 @@ function create_introduction(container_id,globe){
 
   const introText = [
     "Hey there!  Welcome to the World Values Quiz!",
+    "  ",
     "Have you ever wondered whether you'd get along with people",
-    "if you moved abroad?",
-    "Find out with our quiz!",
+    "if you moved abroad? Or even how people social values are",
+    "distributed across the world? Find out with our quiz!",
+    "  ",
+    "To begin, simply press Start and pick a topic that sparks",
+    "your interest!",
+    "You’ll be guided through a series of survey questions. Just",
+    "click the bar that matches your answer and soon the world",
+    "won't have any secrets for your."
   ].join("\n");
 
   const formatedText = introText.split("\n");
@@ -1700,7 +1707,8 @@ function create_introduction(container_id,globe){
     .attr("y", 20)
     .attr("class", "intro_text")
     .attr('fill','white')
-    .attr('text-align','left');
+    .attr('text-align','left')
+    .attr("transform", "translate(0,180)");
 
   text.selectAll("tspan")
     .data(formatedText)
@@ -1710,7 +1718,7 @@ function create_introduction(container_id,globe){
       .text(d => d);
 
   const btnGroup = svg.append("g")
-    .attr("transform", "translate(400,400)")
+    .attr("transform", "translate(200,450)")
     .style("cursor", "pointer");
 
   // Define the start behavior in a separate function
