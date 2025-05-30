@@ -877,16 +877,19 @@ async function run_quiz(topic, containerId, globe) {
     }
     return container;
   }
+  
 
   // Function to show a single question and wait for a bar click.
   async function showQuestion(question) {
     const container = resetContainer(containerId);
 
     // Create a dedicated interactive bar container inside our main container.
+    /*
     const barContainer = document.createElement("div");
     barContainer.id = "interactivebar";
     barContainer.classList.add("module");
     container.appendChild(barContainer);
+    */
 
     // Return a promise that resolves when a bar is clicked.
     return new Promise(resolve => {
@@ -1010,11 +1013,11 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
 
   const svg = d3.select(`#${containerId}`)
     .append("svg")
-    .attr("width", 600)
-    .attr("height", 600);
+    .attr("width", 750)
+    .attr("height", 400);
 
-  const width = 600;
-  const height = 600;
+  const width = 750;
+  const height = 400;
   const innerRadius = 0;
   const outerRadius = 100;
 
@@ -1033,10 +1036,6 @@ function draw_histogram(containerId, data, possibleAnswersMapping = {}) {
     'rgb(57, 23, 70)', // teal/cyan — pairs beautifully with purple and green
     'rgb(82, 135, 248)'  // bubblegum pink — adds a fresh, vibrant contrast to blue and red
   ];
-
-
-
-
 
 
 
@@ -1268,9 +1267,6 @@ This section contains the different functions that allow the dynamic and interac
 
 function create_interactive_globe(container_id, onCountryClick){
 	return new Promise(resolve => {
-		// --------------------
-		// Interactive Earth Globe Code (amCharts 5)
-		// --------------------
 		am5.ready(function() {
 
 		// Create root element
@@ -1287,8 +1283,8 @@ function create_interactive_globe(container_id, onCountryClick){
 			panY: "rotateY",
 			projection: am5map.geoOrthographic(),
 			paddingBottom: 30,
-			paddingTop: 20,
-			paddingLeft: 20,
+			paddingTop: 120,
+			paddingLeft: 60,
 			paddingRight: 20
 		}));
 
@@ -1341,7 +1337,9 @@ function create_interactive_globe(container_id, onCountryClick){
 			  startColor: am5.color(0xeeeeee),
 			  endColor: am5.color(0x0052cc),
         startText:  "Low Similarity",
-        endText:    "High Similarity"
+        endText:    "High Similarity",
+        x: am5.percent(-5),  // 2% to the left of the left edge
+        y: am5.percent(0)
 			})
     );
 
@@ -1389,6 +1387,7 @@ function create_interactive_globe(container_id, onCountryClick){
 		});
 
 		// Rotate animation for the globe
+    /*
 		chart.animate({
 			key: "rotationX",
 			from: 0,
@@ -1396,6 +1395,7 @@ function create_interactive_globe(container_id, onCountryClick){
 			duration: 30000,
 			loops: Infinity
 		});
+    */
 		// Animate chart appearance on load
 		chart.appear(1000, 100);
 
@@ -1463,11 +1463,22 @@ function create_interactive_globe(container_id, onCountryClick){
       if (threeLetterCode && typeof onCountryClick === 'function') {
         onCountryClick(threeLetterCode); // Pass the 3-letter code to the callback
       }
-      
+
+      let textPannel;
+      if (contryFinalScore == -100){textPannel = `${countryName}\nNo Data`}
+      else{textPannel = `${countryName}\nScore: ${contryFinalScore}%`}
       panelLabel.set("text",
-        `${countryName}\nScore: ${contryFinalScore}%`
+        textPannel
       );
       panel.current_country = data.id;
+    });
+
+    chart.seriesContainer.setAll({
+      scale: 0.8,
+      x: am5.percent(20),
+      y: am5.percent(10),              
+      centerX: am5.percent(50),
+      centerY: am5.percent(50)
     });
 
     resolve({ root, chart, polygonSeries, panel, panelLabel });
@@ -1484,6 +1495,7 @@ function update_countries(polygonSeries,countryValues) {
   }
 
 function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
+
   console.log("Loaded mapping", mapping);
   // Parse mapping with fixed JSON formatting.
   const dict_mapping = JSON.parse(fixMappingString(mapping));
@@ -1500,15 +1512,18 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
     .map(([score, label]) => [label, Number(score)]);
 
   // Define layout constants.
-  const width = 900 ,
+  const width = 600 ,
         height = 500,
         barHeight = 12,
         offsetLeft = 50,
-        offsetTop = 80,
-        barGap = 30;
+        offsetTop = 60,
+        barGap = 0.9*(height-offsetTop-(data.length*barHeight))/(data.length-1);
+  
+  console.log('YOOYOY')
+  console.log(data.length)
 
   // Use D3 to insert a title container in the interactive bar container.
-  const container = d3.select("#interactivebar");
+  const container = d3.select("#sectionSelector");
   const titleContainer = container.insert("div", ":first-child")
     .attr("id", "module-title");
 
@@ -1529,7 +1544,7 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
   const maxVal = d3.max(data, d => d[1]);
   const xScale = d3.scaleLinear()
     .domain([0, maxVal])
-    .range([offsetLeft, (width + offsetLeft)*0.6]);
+    .range([offsetLeft, (width + offsetLeft)*0.5]);
 
   // Append the bars.
   svg.selectAll("rect")

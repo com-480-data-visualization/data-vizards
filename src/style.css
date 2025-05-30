@@ -1,106 +1,123 @@
-* {
-	box-sizing: border-box;
-}
+	* {
+		box-sizing: border-box;
+	}
 
-html, body, figure {
-	width: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-}
+	html, body, figure {
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		border: 0;
+	}
 
-/* Default font and size */
-body {
+	/* Default font and size */
+	body {
 
-	width: 100vw;
-	height: 100vh;
+		width: 100vw;
+		height: 100vh;
 
-	/* center vertically */
-	/*display: flex;*/
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-content: center;
+		/* center vertically */
+		/*display: flex;*/
+		flex-flow: row nowrap;
+		justify-content: center;
+		align-content: center;
 
-	/* background behind the plot */
-	background: #20232a;
+		/* background behind the plot */
+		background: #20232a;
 
-	/* default text */
-	font-family: 'Charter', dserif;
-	font-size: 1.1rem;
-}
+		/* default text */
+		font-family: 'Charter', dserif;
+		font-size: 1.1rem;
+	}
 
 
-#page-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 1rem;        
-  }
+	#page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;        
+	}
 
-#page-header > div {
-	margin: 0;
-  }
+	#page-header > div {
+		margin: 0;
+	}
 
-#explore-title {
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: #fff;
-  }
+	#explore-title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #fff;
+	}
 
-#intro_text {
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: #f60909;
-}
-  
-#main-title {
-	font-family: 'Charter', serif;
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: #fff;
-  }
+	#intro_text {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #f60909;
+	}
+	
+	#main-title {
+		font-family: 'Charter', serif;
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #fff;
+	}
 
-#dashboard {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: 1rem;
-	padding: 0 1rem 1rem;
-  }
-  .module,
-  #chartdiv,
-  #interactivebar {
-	background: #20232a;
-	padding: 1rem;
-	border-radius: 8px;
-  }
-  #sectionSelector {
-	background: #20232a;
-	padding: 1rem;
-	border-radius: 8px;
-  }
+	#dashboard {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(300px, 1fr)); /*repeat(auto-fit, minmax(300px, 1fr));*/
+		gap: 1rem;
+		padding: 0 1rem 1rem;
+		justify-content: center;   /* centers the remaining column(s) in the container */
+  		justify-items: center;     /* centers each cell’s content */
+	}
 
-  #module-title {
-	font-family: 'Charter', serif;
-	width: 100%;
-	text-align: center;
-	padding-top: 20px;
-  }
-  
-  #module-title .main-title {
-	font-family: 'Charter', serif;
-	font-size: 24px;
-	font-weight: bold;
-	color: white;
-  }
-  
-  #module-title .module-subtitle {
-	font-family: 'Charter', serif;
-	font-size: 16px;
-	margin-top: 4px;
-	color: #ccc;
-  }
 
-svg {
-	margin: 1rem;
-}
+	.module,
+	#chartdiv{
+		background: #20232a;
+		padding: 1rem;
+		border-radius: 8px;
+	  
+		width: 100%;
+		height: 600px;
+		width: 700px;
+	  }
+	#introduction{
+		background: #20232a;
+		padding: 1rem;
+		border-radius: 8px;
+	  }
+	#interactivebar {
+		background: #20232a;
+		padding: 1rem;
+		border-radius: 8px;
+	  }
+	#sectionSelector {
+		background: #20232a;
+		padding: 1rem;
+		border-radius: 8px;
+	}
+
+	#module-title {
+		font-family: 'Charter', serif;
+		width: 100%;
+		text-align: center;
+		padding-top: 20px;
+	}
+	
+	#module-title .main-title {
+		font-family: 'Charter', serif;
+		font-size: 24px;
+		font-weight: bold;
+		color: white;
+	}
+	
+	#module-title .module-subtitle {
+		font-family: 'Charter', serif;
+		font-size: 16px;
+		margin-top: 4px;
+		color: #ccc;
+	}
+
+	svg {
+		margin: 1rem;
+	}
 
