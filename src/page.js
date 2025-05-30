@@ -606,7 +606,7 @@ function sampleFromArray(arr, n) {
   return result;
 }
 
-function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 15) {
+function selectRandomQuestionsAndClean(dfMetaAnswers, dfClean, selectedTopic, nbrOfQuestions = 2) {
   // Filter questions based on selected topic.
   let filteredQuestions;
   if (selectedTopic === 'Global') {
@@ -803,7 +803,12 @@ function build_histograms(containerId, selected_country, data_clean, data_answer
   // Histogram chart container (where the SVG is drawn)
   const histogramChartContainer = document.createElement("div");
   histogramChartContainer.id = "histogram-chart-container";
+  histogramChartContainer.style.justifyContent = "flex-start";
+  histogramChartContainer.style.justifyContent = "center";
+  histogramChartContainer.style.marginTop = "-70px";
+  histogramChartContainer.style.marginLeft = "-105px";
   histogramModule.appendChild(histogramChartContainer);
+
 
   // Update histogram when dropdown or button changes
   function updateHistogram() {
