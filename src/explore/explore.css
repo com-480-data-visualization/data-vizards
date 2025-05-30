@@ -50,15 +50,24 @@ h2 {
 
 canvas#demoDonut {
     display: block;
-    max-width: 600px;
+    max-width: 300px;
     margin: 0 auto;
-    height: 400px;
+    height: 100px;
 }
 
 .bubble-tooltip {
     font-family: 'Charter', serif;
     font-size: 1.1rem;
     z-index: 10;
+}
+#individualsBubbles {
+  height: 500px;
+}
+
+.page-wrapper {
+  margin: 0 auto;
+  padding: 20px 100px;
+  max-width: 1400px;
 }
 
 header h1 {
@@ -166,7 +175,7 @@ input[type="radio"] {
 #demoDonut {
     margin-bottom: 2em;
     width: 100%;
-    height: 600px;
+    height: 400px;
 }
 
 .donut-legend-item {

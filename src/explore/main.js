@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .domain(sizeExtent)
         .range([minR, maxR]);
 
-      const width = 2150, height = 950;
+      const width = 1900, height = 800;///width = 2150, height = 950;
       const svg = d3.select('#countryBubbles')
         .attr('height', height);
 
