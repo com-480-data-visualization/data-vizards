@@ -50,7 +50,7 @@ The related work is shown in the corresponding section of the [pdf](./milestones
 
 • [Website](https://com-480-data-visualization.github.io/data-vizards/) 
 
-• [Process book](#milestone-3) 
+• [Process book](process_book_final.pdf) 
 
 • [Screencast](#video)
 
