@@ -1533,11 +1533,14 @@ function create_interactive_bar(globe, name, subtitle, mapping, onBarClick) {
         height = 500,
         barHeight = 12,
         offsetLeft = 50,
-        offsetTop = 60,
-        barGap = 0.9*(height-offsetTop-(data.length*barHeight))/(data.length-1);
-  
-  console.log('YOOYOY')
-  console.log(data.length)
+        offsetTop = 60;
+
+  let barGap;
+  if (data.length > 6){
+    barGap = 0.9*(height-offsetTop-(data.length*barHeight))/(data.length-1)
+  } else {
+    barGap = 32
+  }
 
   // Use D3 to insert a title container in the interactive bar container.
   const container = d3.select("#sectionSelector");
