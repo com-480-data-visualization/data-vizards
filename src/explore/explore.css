@@ -60,9 +60,7 @@ canvas#demoDonut {
     font-size: 1.1rem;
     z-index: 10;
 }
-#individualsBubbles {
-  height: 500px;
-}
+
 
 .page-wrapper {
   margin: 0 auto;
@@ -259,4 +257,8 @@ footer .copyright {
     background: #743dff;
     color: #fff;
     transform: scale(1.08);
+}
+
+#country-similarities {
+  margin-bottom: -250px; /* Adjust as needed */
 }

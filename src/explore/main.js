@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .style('padding', '12px')
         .style('border-radius', '8px')
         .style('font-family', 'Charter, serif')
-        .style('font-size', '35px');
+        .style('font-size', '15px');
 
       // Add zoom behavior
       const zoom = d3.zoom()
