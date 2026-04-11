@@ -1167,14 +1167,15 @@ function create_introduction(container_id,globe){
   
   const introText = [
       "Have you ever wondered whether you'd get along with people",
-      "if you moved abroad? Or even how people social values are",
-      "distributed across the world? Find out with our quiz!",
+      "if you moved abroad? Or how social values differ across the",
+      "world?",
       "  ",
-      "To begin, simply press Start and pick a topic that sparks",
-      "your interest!",
-      "You’ll be guided through a series of survey questions. Just",
-      "click the bar that matches your answer and soon the world",
-      "won't have any secrets for your."
+      "Find out with our interactive quiz! To begin, simply press Start",
+      "and choose a topic that sparks your interest. You'll be guided",
+      "through a series of questions. Select the option that best",
+      "matches your view.",
+	  "  ",
+      "Before long, the world won't hold any secrets from you."
     ].join("\n");
   
     const formatedText = introText.split("\n");
